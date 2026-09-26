@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Учёт отправлений</title>
+
+  <!-- PWA Manifest и метатеги для установки как приложение -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" id="theme-color-meta" content="#005bff" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Учёт" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <style>
+    :root {
+      --primary: #005bff;
+      --primary-dark: #0047cc;
+      --primary-light: #eaf1ff;
+      --primary-light-hover: #dbe7ff;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --success-border: #a7f3d0;
+      --warning: #b45309;
+      --warning-light: #fffbeb;
+      --warning-border: #fde68a;
+      --bg: #f4f5f8;
+      --card-bg: #ffffff;
+      --text: #171a1f;
+      --text-muted: #788292;
+      --border: #e2e5eb;
+      --danger: #fa383e;
+      --danger-light: #feecef;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body.theme-wb {
+      --primary: #cb11ab;
+      --primary-dark: #a10986;
+      --primary-light: #fdf0fa;
+      --primary-light-hover: #fae1f5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 115px;
+    }
+
+    /* Верхняя панель */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .header-top {
+      background: var(--primary);
+      color: #ffffff;
+      padding: 12px 16px;
+      width: 100%;
+      transition: background-color 0.25s ease;
+    }
+    .header-top-content {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Выбор маркетплейса */
+    .market-menu-wrap { position: relative; }
+    .market-selector-btn {
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 7px 12px;
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: -0.3px;
+    }
+    .market-selector-btn:active { background: rgba(255, 255, 255, 0.28); }
+    .market-chevron { font-size: 11px; opacity: 0.9; transform: translateY(1px); }
+
+    .market-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border);
+      min-width: 180px;
+      overflow: hidden;
+      display: none;
+      z-index: 200;
+      animation: menuPop 0.15s ease-out;
+    }
+    .market-dropdown.open { display: block; }
+
+    @keyframes menuPop {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .market-item {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f3f6;
+    }
+    .market-item:last-child { border-bottom: none; }
+    .market-item:hover { background: #f7f9fc; }
+    .market-item.active { color: var(--primary); background: var(--primary-light); }
+    .market-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .market-dot.ozon { background: #005bff; }
+    .market-dot.wb { background: #cb11ab; }
+
+    .stat-item { text-align: right; }
+    .stat-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.78);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .stat-value {
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.1;
+    }
+
+    /* Календарь */
+    .date-section {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .date-top-row {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 8px 16px 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .month-trigger {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: var(--radius-sm);
+    }
+    .month-trigger:active { background: var(--bg); }
+    .month-icon { font-size: 9px; color: var(--primary); transform: translateY(1px); }
+    .hidden-date-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .date-actions { display: flex; align-items: center; gap: 6px; }
+    .btn-today {
+      border: none;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .btn-today:active { transform: scale(0.95); }
+    .month-nav-btn {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-muted);
+    }
+
+    /* Карточки дней */
+    .days-ribbon-container { max-width: 680px; margin: 0 auto; }
+    .days-ribbon {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 6px 14px 10px;
+      scrollbar-width: none;
+      scroll-snap-type: x mandatory;
+    }
+    .days-ribbon::-webkit-scrollbar { display: none; }
+
+    .day-card {
+      flex: 0 0 40px;
+      height: 52px;
+      background: #fafbfe;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      scroll-snap-align: center;
+      position: relative;
+    }
+    .day-card:active { transform: scale(0.94); }
+    .day-card .day-weekday {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .day-card .day-number {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-top: 2px;
+    }
+    .day-card .day-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: transparent;
+      margin-top: 3px;
+    }
+    .day-card.has-data .day-dot { background: var(--primary); }
+    .day-card.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateY(-1px);
+    }
+    .day-card.active .day-weekday { color: rgba(255, 255, 255, 0.85); }
+    .day-card.active .day-number { color: #ffffff; }
+    .day-card.active.has-data .day-dot { background: #ffffff; }
+    .day-card.is-today:not(.active) { border-color: var(--primary); background: var(--primary-light); }
+    .day-card.is-today:not(.active) .day-number { color: var(--primary); }
+
+    /* Контейнер */
+    .container {
+      max-width: 680px;
+      margin: 14px auto;
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Аккордеоны для WB (по умолчанию скрыты) */
+    .shift-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+      transition: border-color 0.2s;
+    }
+    .shift-card:not(.open) { overflow: hidden; }
+    .shift-card.open { overflow: visible; }
+
+    .shift-header {
+      padding: 12px 14px;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+      border-radius: 13px;
+      border-bottom: 1px solid transparent;
+      transition: background 0.15s;
+    }
+    .shift-header:active { background: #fbfbfd; }
+    .shift-card.open .shift-header {
+      border-bottom-color: var(--border);
+      background: #fafbfe;
+      border-radius: 13px 13px 0 0;
+    }
+
+    .shift-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .shift-icon { font-size: 18px; }
+    .shift-name { font-size: 15px; font-weight: 800; color: var(--text); }
+    .shift-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .shift-arrow {
+      font-size: 12px;
+      color: var(--text-muted);
+      transition: transform 0.25s ease;
+    }
+    .shift-card.open .shift-arrow {
+      transform: rotate(180deg);
+    }
+
+    .shift-body {
+      display: none;
+      padding: 10px;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .shift-card.open .shift-body {
+      display: flex;
+    }
+
+    /* Строка точки */
+    .store-row {
+      background: #fafbfe;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color .2s, background .2s;
+      position: relative;
+    }
+    .store-row.is-scanned {
+      border-color: var(--success-border);
+      background: #fbfdfc;
+    }
+    .store-row.is-no-scan {
+      border-color: var(--warning-border);
+      background: #fffdfa;
+    }
+
+    .market-tag {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 5px 6px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    /* Поле названия точки */
+    .store-number-wrap {
+      width: 60px;
+      flex-shrink: 0;
+    }
+    body.theme-wb .store-number-wrap {
+      width: 120px;
+    }
+
+    .store-number-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 4px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      outline: none;
+      background: #fff;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    body.theme-wb .store-number-input {
+      font-size: 11px;
+      letter-spacing: -0.2px;
+    }
+
+    .store-number-input:not(.is-readonly):focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+      background: #ffffff;
+    }
+
+    .store-number-input.is-readonly {
+      background: #eef1f6;
+      color: var(--text-muted);
+      cursor: default;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .qty-wrap {
+      width: 56px;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .qty-input {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 6px 18px 6px 4px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: right;
+      color: var(--text);
+      outline: none;
+      background: #fff;
+      -moz-appearance: textfield;
+    }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .qty-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    .qty-unit {
+      position: absolute;
+      right: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 9.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    /* Выпадающий список статуса сканирования для WB */
+    .status-dropdown-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+    }
+    .status-dropdown-wrap.menu-open {
+      z-index: 60;
+    }
+
+    .btn-scan {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      color: var(--text-muted);
+      border-radius: 7px;
+      padding: 6px 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      white-space: nowrap;
+      min-width: 84px;
+      user-select: none;
+      transition: all .12s ease;
+    }
+    .btn-scan:active { transform: scale(0.97); }
+    .btn-scan.scanned {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .btn-scan.no-scan {
+      background: var(--warning-light);
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+    .btn-scan .arrow-down {
+      font-size: 8px;
+      opacity: 0.6;
+      margin-left: 1px;
+    }
+
+    .status-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 6px 22px rgba(0, 0, 0, 0.16);
+      border: 1px solid var(--border);
+      min-width: 146px;
+      z-index: 70;
+      display: none;
+      overflow: hidden;
+      animation: menuPop 0.12s ease-out;
+    }
+    .status-dropdown-menu.open {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .status-opt {
+      padding: 9px 10px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.12s;
+    }
+    .status-opt:hover { background: #f8fafc; }
+    .status-opt.opt-scanned { color: var(--success); }
+    .status-opt.opt-noscan {
+      color: var(--warning);
+      border-top: 1px solid #f1f3f6;
+    }
+    .status-opt.active { background: #f1f5f9; }
+
+    .del-btn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: transparent;
+      color: #9ea7b4;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .del-btn:hover { background: var(--danger-light); color: var(--danger); }
+
+    .btn-add-row-shift {
+      background: transparent;
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 2px;
+    }
+    .btn-add-row-shift:active { background: var(--primary-light); }
+
+    /* Пустой день */
+    .empty-day-box {
+      text-align: center;
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px dashed #ced4de;
+      padding: 24px 16px;
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .empty-day-title { font-size: 14px; color: var(--text-muted); }
+    .btn-action-light {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Нижняя панель */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      padding: 10px 16px 14px;
+      box-shadow: 0 -4px 18px rgba(0,0,0,0.07);
+      border-top: 1px solid var(--border);
+      z-index: 100;
+    }
+    .bottom-content {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bottom-left-block {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .bottom-summary-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    .bottom-actions-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-sub-action {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .btn-sub-action:active {
+      transform: scale(0.96);
+      background: #e2e8f0;
+    }
+
+    .btn-sub-action.reset-action {
+      background: var(--danger-light);
+      border-color: #fecaca;
+      color: var(--danger);
+    }
+    .btn-sub-action.reset-action:active {
+      background: #fca5a5;
+    }
+
+    .btn-add {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .btn-add:active {
+      background: var(--primary-dark);
+      transform: scale(0.98);
+    }
+
+    /* Модалки */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(2px);
+      z-index: 300;
+      display: none;
+      align-items: flex-end;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal-sheet {
+      background: #fff;
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      border-radius: 20px 20px 0 0;
+      padding: 18px 16px 26px;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      animation: sheetUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .modal-list {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 13px;
+      background: var(--bg);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .history-row:hover { background: var(--primary-light); }
+
+    /* Карточки действий в шторке сброса */
+    .reset-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 14px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .reset-card:active { transform: scale(0.98); }
+
+    .reset-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex-shrink: 0;
+    }
+
+    .reset-card-text { flex: 1; }
+    .reset-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .reset-card-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.25;
+    }
+
+    .reset-card.card-day {
+      border-color: #cbd5e1;
+      background: #f8fafc;
+    }
+    .reset-card.card-day .reset-card-icon { background: #e2e8f0; }
+
+    .reset-card.card-all {
+      border-color: #fecaca;
+      background: #fff5f5;
+    }
+    .reset-card.card-all .reset-card-icon { background: var(--danger-light); }
+    .reset-card.card-all .reset-card-title { color: var(--danger); }
+
+    .btn-sheet-cancel {
+      width: 100%;
+      background: var(--bg);
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .btn-sheet-cancel:active { background: #e2e8f0; }
+
+    /* Окно подтверждения удаления под цвет темы */
+    .confirm-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(3px);
+      z-index: 400;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .confirm-modal-overlay.active { display: flex; }
+
+    .confirm-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 340px;
+      border-radius: 18px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+      border: 1.5px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      animation: popConfirm 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .confirm-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--primary);
+    }
+
+    @keyframes popConfirm {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .confirm-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    .confirm-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .confirm-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .confirm-btn {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+    }
+
+    .confirm-btn-cancel {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .confirm-btn-cancel:active { background: #e2e8f0; }
+
+    .confirm-btn-action {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+    .confirm-btn-action:active {
+      background: var(--primary-dark);
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="theme-ozon">
+
+  <header class="header">
+    <div class="header-top">
+      <div class="header-top-content">
+        <div class="market-menu-wrap">
+          <button class="market-selector-btn" onclick="toggleMarketDropdown(event)">
+            <span id="market-title">Учёт Ozon</span>
+            <span class="market-chevron">▾</span>
+          </button>
+          <div class="market-dropdown" id="market-dropdown">
+            <div class="market-item" id="opt-ozon" onclick="selectMarket('ozon')">
+              <span class="market-dot ozon"></span>
+              <span>Ozon</span>
+            </div>
+            <div class="market-item" id="opt-wb" onclick="selectMarket('wb')">
+              <span class="market-dot wb"></span>
+              <span>Wildberries</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-item">
+          <div class="stat-label">За день</div>
+          <div class="stat-value" id="day-total-qty">0 шт.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Календарь -->
+    <div class="date-section">
+      <div class="date-top-row">
+        <div class="month-trigger">
+          <span id="month-title">Сентябрь 2026</span>
+          <span class="month-icon">▼</span>
+          <input type="date" class="hidden-date-input" id="date-picker-input" onchange="onDatePicked(this.value)">
+        </div>
+
+        <div class="date-actions">
+          <button class="month-nav-btn" title="Предыдущий месяц" onclick="shiftMonth(-1)">‹</button>
+          <button class="btn-today" onclick="goToToday()">Сегодня</button>
+          <button class="month-nav-btn" title="Следующий месяц" onclick="shiftMonth(1)">›</button>
+        </div>
+      </div>
+
+      <div class="days-ribbon-container">
+        <div class="days-ribbon" id="days-ribbon"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="main-content"></main>
+
+  <aside class="bottom-bar">
+    <div class="bottom-content">
+      <div class="bottom-left-block">
+        <div class="bottom-summary-text">
+          Итого: <strong id="summary-stores-count" style="color:var(--text)">0 точ.</strong>
+          <span id="summary-scanned-count" style="color: var(--success); font-weight:700; margin-left: 2px;"></span>
+        </div>
+        <div class="bottom-actions-row">
+          <button class="btn-sub-action" onclick="toggleHistory(true)">
+            <span>📋</span> История
+          </button>
+          <button class="btn-sub-action reset-action" onclick="toggleResetModal(true)">
+            <span>🔄</span> Сброс
+          </button>
+        </div>
+      </div>
+      <button class="btn-add" id="btn-add-store" onclick="handleAddStoreClick()">+ Добавить Ozon</button>
+    </div>
+  </aside>
+
+  <!-- Кастомное окно подтверждения удаления под цвет темы -->
+  <div class="confirm-modal-overlay" id="confirm-modal" onclick="if(event.target === this) handleConfirmResult(false)">
+    <div class="confirm-card">
+      <div class="confirm-icon-wrap" id="confirm-icon">🗑️</div>
+      <div class="confirm-title" id="confirm-title">Удалить точку?</div>
+      <div class="confirm-desc" id="confirm-desc">Вы действительно хотите удалить эту запись?</div>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-btn confirm-btn-cancel" onclick="handleConfirmResult(false)">Отмена</button>
+        <button type="button" class="confirm-btn confirm-btn-action" id="confirm-action-btn" onclick="handleConfirmResult(true)">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Шторка сброса данных -->
+  <div class="modal-overlay" id="reset-modal" onclick="if(event.target === this) toggleResetModal(false)">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Управление сбросом</h3>
+        <button style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-muted);" onclick="toggleResetModal(false)">×</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="reset-card card-day" onclick="resetDayOnly()">
+          <div class="reset-card-icon">🔄</div>
+          <div class="reset-card-text">
+            <div class="reset-card-title">Обнулить текущий день</div>
+            <div class="reset-card-desc">Сбросит штуки и отметки сканирования. Точки и названия останутся.</div>
+          </div>
+        </div>
+
+        <div class="reset-card card-all" onclick="resetEntireDatabase()">
+          <div class="reset-card-icon">🗑️</div>
+          <div class="reset-card-text">
+            <div class="reset-card-title">Очистить всю базу</div>
+            <div class="reset-card-desc">Удалит все сохранённые дни и точки текущего сервиса.</div>
+          </div>
+        </div>
+
+        <button class="btn-sheet-cancel" onclick="toggleResetModal(false)">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модалка истории -->
+  <div class="modal-overlay" id="history-modal" onclick="if(event.target === this) toggleHistory(false)">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <h3>Сводка по дням</h3>
+        <button style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-muted);" onclick="toggleHistory(false)">×</button>
+      </div>
+      <div class="modal-list" id="history-items"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentMarket = localStorage.getItem('selected_market') || 'ozon';
+    let currentDate = getTodayDateStr();
+    let confirmCallback = null;
+
+    const WB_DEFAULT_STORES = ['Ярославль', 'Москва', 'Екатеринбург', 'Санкт-Петербург', 'Краснодар'];
+
+    const MARKET_CONFIG = {
+      ozon: {
+        title: 'Учёт Ozon',
+        tag: 'Ozon',
+        addBtn: '+ Добавить Ozon',
+        storageKey: 'ozon_daily_inventory_db',
+        bodyClass: 'theme-ozon',
+        themeColor: '#005bff'
+      },
+      wb: {
+        title: 'Учёт Wildberries',
+        tag: 'WB',
+        addBtn: '+ Добавить точку',
+        storageKey: 'wb_daily_inventory_shifts_db',
+        bodyClass: 'theme-wb',
+        themeColor: '#cb11ab'
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyMarketTheme();
+      renderRibbon();
+      renderCurrentDay();
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.market-menu-wrap')) {
+          document.getElementById('market-dropdown').classList.remove('open');
+        }
+        if (!e.target.closest('.status-dropdown-wrap')) {
+          document.querySelectorAll('.status-dropdown-menu.open').forEach(menu => {
+            menu.classList.remove('open');
+            menu.closest('.status-dropdown-wrap').classList.remove('menu-open');
+          });
+        }
+      });
+    });
+
+    function showConfirmModal({ title, desc, icon = '🗑️', confirmText = 'Удалить', onConfirm }) {
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-desc').textContent = desc;
+      document.getElementById('confirm-icon').textContent = icon;
+      document.getElementById('confirm-action-btn').textContent = confirmText;
+      confirmCallback = onConfirm;
+
+      document.getElementById('confirm-modal').classList.add('active');
+    }
+
+    function handleConfirmResult(agreed) {
+      document.getElementById('confirm-modal').classList.remove('active');
+      if (agreed && typeof confirmCallback === 'function') {
+        confirmCallback();
+      }
+      confirmCallback = null;
+    }
+
+    function toggleMarketDropdown(e) {
+      e.stopPropagation();
+      document.getElementById('market-dropdown').classList.toggle('open');
+    }
+
+    function selectMarket(marketKey) {
+      if (currentMarket === marketKey) {
+        document.getElementById('market-dropdown').classList.remove('open');
+        return;
+      }
+
+      currentMarket = marketKey;
+      localStorage.setItem('selected_market', marketKey);
+      document.getElementById('market-dropdown').classList.remove('open');
+
+      applyMarketTheme();
+      renderRibbon(false);
+      renderCurrentDay();
+    }
+
+    function applyMarketTheme() {
+      const cfg = MARKET_CONFIG[currentMarket];
+      document.body.className = cfg.bodyClass;
+      document.getElementById('market-title').textContent = cfg.title;
+      document.getElementById('btn-add-store').textContent = cfg.addBtn;
+
+      // Динамическое обновление цвета статус-бара PWA
+      const themeColorMeta = document.getElementById('theme-color-meta');
+      if (themeColorMeta) {
+        themeColorMeta.setAttribute('content', cfg.themeColor);
+      }
+
+      document.getElementById('opt-ozon').classList.toggle('active', currentMarket === 'ozon');
+      document.getElementById('opt-wb').classList.toggle('active', currentMarket === 'wb');
+    }
+
+    function getStorageKey() {
+      return MARKET_CONFIG[currentMarket].storageKey;
+    }
+
+    function getTodayDateStr() {
+      const now = new Date();
+      return formatDateToYMD(now);
+    }
+
+    function formatDateToYMD(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    /* Рендер дней */
+    function renderRibbon(shouldCenter = true) {
+      const [y, m, d] = currentDate.split('-').map(Number);
+      const activeDateObj = new Date(y, m - 1, d);
+      const todayStr = getTodayDateStr();
+      const db = getAllData();
+
+      const monthName = activeDateObj.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+      document.getElementById('month-title').textContent = capitalize(monthName);
+      document.getElementById('date-picker-input').value = currentDate;
+
+      const ribbon = document.getElementById('days-ribbon');
+      ribbon.innerHTML = '';
+
+      const daysInMonth = new Date(y, m, 0).getDate();
+      let activeCard = null;
+
+      for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
+        const loopDate = new Date(y, m - 1, dayNum);
+        const loopDateStr = formatDateToYMD(loopDate);
+        const weekday = loopDate.toLocaleDateString('ru-RU', { weekday: 'short' });
+
+        const card = document.createElement('div');
+        card.className = 'day-card';
+
+        const isSelected = (loopDateStr === currentDate);
+        const isToday = (loopDateStr === todayStr);
+
+        let hasData = false;
+        if (db[loopDateStr]) {
+          if (currentMarket === 'wb') {
+            const morningShift = db[loopDateStr].morning || db[loopDateStr].day || [];
+            const eveningShift = db[loopDateStr].evening || [];
+            hasData = (morningShift.length > 0 || eveningShift.length > 0);
+          } else {
+            hasData = (db[loopDateStr].length > 0);
+          }
+        }
+
+        if (isSelected) {
+          card.classList.add('active');
+          activeCard = card;
+        }
+        if (isToday) card.classList.add('is-today');
+        if (hasData) card.classList.add('has-data');
+
+        card.innerHTML = `
+          <span class="day-weekday">${weekday}</span>
+          <span class="day-number">${dayNum}</span>
+          <span class="day-dot"></span>
+        `;
+
+        card.onclick = () => {
+          if (currentDate === loopDateStr) return;
+          currentDate = loopDateStr;
+          renderRibbon(true);
+          renderCurrentDay();
+        };
+
+        ribbon.appendChild(card);
+      }
+
+      if (shouldCenter && activeCard) {
+        setTimeout(() => {
+          activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }, 50);
+      }
+    }
+
+    function shiftMonth(delta) {
+      const [y, m, d] = currentDate.split('-').map(Number);
+      const newDate = new Date(y, m - 1 + delta, 1);
+      currentDate = formatDateToYMD(newDate);
+      renderRibbon(true);
+      renderCurrentDay();
+    }
+
+    function onDatePicked(val) {
+      if (!val) return;
+      currentDate = val;
+      renderRibbon(true);
+      renderCurrentDay();
+    }
+
+    function goToToday() {
+      currentDate = getTodayDateStr();
+      renderRibbon(true);
+      renderCurrentDay();
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function getAllData() {
+      try {
+        const raw = localStorage.getItem(getStorageKey());
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveAllData(db) {
+      localStorage.setItem(getStorageKey(), JSON.stringify(db));
+    }
+
+    /* Рендер контента дня */
+    function renderCurrentDay() {
+      const container = document.getElementById('main-content');
+      container.innerHTML = '';
+      const db = getAllData();
+      const dayData = db[currentDate];
+
+      if (currentMarket === 'wb') {
+        renderWbContent(container, dayData);
+      } else {
+        renderOzonContent(container, dayData);
+      }
+      recalculateAll();
+    }
+
+    /* WB: Утро и Вечер */
+    function renderWbContent(container, dayData) {
+      const morningData = (dayData && (dayData.morning || dayData.day)) || WB_DEFAULT_STORES.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
+      const eveningData = (dayData && dayData.evening) || WB_DEFAULT_STORES.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
+
+      container.appendChild(createShiftAccordion('morning', '🌅', 'Утро', morningData));
+      container.appendChild(createShiftAccordion('evening', '🌙', 'Вечер', eveningData));
+    }
+
+    function createShiftAccordion(shiftKey, icon, title, items) {
+      const card = document.createElement('div');
+      card.className = 'shift-card';
+      card.dataset.shift = shiftKey;
+
+      card.innerHTML = `
+        <div class="shift-header" onclick="toggleShift(this)">
+          <div class="shift-title-group">
+            <span class="shift-icon">${icon}</span>
+            <span class="shift-name">${title}</span>
+            <span class="shift-badge shift-badge-${shiftKey}">0 шт.</span>
+          </div>
+          <span class="shift-arrow">▼</span>
+        </div>
+        <div class="shift-body">
+          <div class="shift-rows-list" id="shift-list-${shiftKey}"></div>
+          <button type="button" class="btn-add-row-shift" onclick="addShiftRow('${shiftKey}')">+ Добавить точку в смену</button>
+        </div>
+      `;
+
+      const list = card.querySelector(`#shift-list-${shiftKey}`);
+      items.forEach(item => {
+        list.appendChild(createStoreRow(item.storeNumber, item.qty, item.scanned, shiftKey));
+      });
+
+      return card;
+    }
+
+    function toggleShift(headerEl) {
+      const card = headerEl.closest('.shift-card');
+      card.classList.toggle('open');
+    }
+
+    /* Ozon */
+    function renderOzonContent(container, dayStores) {
+      if (!dayStores || dayStores.length === 0) {
+        container.innerHTML = `
+          <div class="empty-day-box">
+            <div class="empty-day-title">На этот день записей Ozon нет</div>
+            <button class="btn-action-light" onclick="addOzonRow()">Создать первую точку</button>
+          </div>
+        `;
+        return;
+      }
+
+      const listWrap = document.createElement('div');
+      listWrap.id = 'ozon-list-wrap';
+      listWrap.style.display = 'flex';
+      listWrap.style.flexDirection = 'column';
+      listWrap.style.gap = '8px';
+
+      dayStores.forEach((s, idx) => {
+        listWrap.appendChild(createStoreRow(`№${idx + 1}`, s.qty, s.scanned, null));
+      });
+      container.appendChild(listWrap);
+    }
+
+    function normalizeStatus(scanned) {
+      if (scanned === true || scanned === 'scanned') return 'scanned';
+      if (scanned === 'no_scan') return 'no_scan';
+      return '';
+    }
+
+    function createStoreRow(storeNumber = '', qty = '', scanned = '', shiftKey = null) {
+      const row = document.createElement('div');
+      const status = normalizeStatus(scanned);
+      const isWB = (currentMarket === 'wb');
+
+      let rowClass = 'store-row';
+      if (status === 'scanned') rowClass += ' is-scanned';
+      else if (status === 'no_scan') rowClass += ' is-no-scan';
+
+      row.className = rowClass;
+      row.dataset.status = status;
+      if (shiftKey) row.dataset.shift = shiftKey;
+
+      const tagText = MARKET_CONFIG[currentMarket].tag;
+      let actionControlHtml = '';
+
+      if (isWB) {
+        let btnText = 'Отсканировано';
+        let btnClass = 'btn-scan';
+        if (status === 'scanned') {
+          btnText = '✓ Отсканировано';
+          btnClass += ' scanned';
+        } else if (status === 'no_scan') {
+          btnText = '✕ Нет сканир.';
+          btnClass += ' no-scan';
+        }
+
+        actionControlHtml = `
+          <div class="status-dropdown-wrap">
+            <button 
+              type="button" 
+              class="${btnClass}" 
+              onclick="toggleStatusDropdown(event, this)">
+              <span>${btnText}</span><span class="arrow-down">▾</span>
+            </button>
+            <div class="status-dropdown-menu">
+              <div class="status-opt opt-scanned ${status === 'scanned' ? 'active' : ''}" onclick="selectWbStatus(event, this, 'scanned')">
+                <span>✓ Отсканировано</span>
+              </div>
+              <div class="status-opt opt-noscan ${status === 'no_scan' ? 'active' : ''}" onclick="selectWbStatus(event, this, 'no_scan')">
+                <span>✕ Нет сканирования</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        const isScannedBool = (status === 'scanned');
+        actionControlHtml = `
+          <button 
+            type="button" 
+            class="btn-scan ${isScannedBool ? 'scanned' : ''}" 
+            onclick="toggleOzonScan(this)">
+            ${isScannedBool ? '✓ Отсканировано' : 'Отсканировано'}
+          </button>
+        `;
+      }
+
+      row.innerHTML = `
+        <span class="market-tag">${tagText}</span>
+        <div class="store-number-wrap">
+          <input 
+            type="text" 
+            class="store-number-input ${isWB ? '' : 'is-readonly'}" 
+            value="${escapeHtml(storeNumber)}" 
+            title="${escapeHtml(storeNumber)}"
+            placeholder="${isWB ? 'Название' : '№'}"
+            ${isWB ? '' : 'readonly tabindex="-1"'}
+            oninput="saveCurrentDay()"
+            onkeydown="if(event.key==='Enter') handleAddStoreClick()">
+        </div>
+        <div class="qty-wrap">
+          <input 
+            type="number" 
+            class="qty-input" 
+            value="${qty === '' ? '' : Math.max(0, parseInt(qty) || 0)}" 
+            min="0" 
+            placeholder="0" 
+            oninput="saveCurrentDay()"
+            onkeydown="if(event.key==='Enter') handleAddStoreClick()">
+          <span class="qty-unit">шт.</span>
+        </div>
+        ${actionControlHtml}
+        <button type="button" class="del-btn" title="Удалить" onclick="confirmRemoveRow(this)">×</button>
+      `;
+
+      return row;
+    }
+
+    function toggleStatusDropdown(e, btn) {
+      e.stopPropagation();
+      const wrap = btn.closest('.status-dropdown-wrap');
+      const menu = wrap.querySelector('.status-dropdown-menu');
+      const isOpen = menu.classList.contains('open');
+
+      document.querySelectorAll('.status-dropdown-menu.open').forEach(m => {
+        m.classList.remove('open');
+        m.closest('.status-dropdown-wrap').classList.remove('menu-open');
+      });
+
+      if (!isOpen) {
+        menu.classList.add('open');
+        wrap.classList.add('menu-open');
+      }
+    }
+
+    function selectWbStatus(e, itemEl, newStatus) {
+      e.stopPropagation();
+      const row = itemEl.closest('.store-row');
+      const wrap = row.querySelector('.status-dropdown-wrap');
+      const menu = row.querySelector('.status-dropdown-menu');
+      const btn = row.querySelector('.btn-scan');
+
+      const currentStatus = row.dataset.status || '';
+      const finalStatus = (currentStatus === newStatus) ? '' : newStatus;
+
+      row.dataset.status = finalStatus;
+      row.classList.remove('is-scanned', 'is-no-scan');
+      btn.className = 'btn-scan';
+
+      menu.querySelectorAll('.status-opt').forEach(opt => opt.classList.remove('active'));
+
+      if (finalStatus === 'scanned') {
+        row.classList.add('is-scanned');
+        btn.classList.add('scanned');
+        btn.innerHTML = '<span>✓ Отсканировано</span><span class="arrow-down">▾</span>';
+        menu.querySelector('.opt-scanned').classList.add('active');
+      } else if (finalStatus === 'no_scan') {
+        row.classList.add('is-no-scan');
+        btn.classList.add('no-scan');
+        btn.innerHTML = '<span>✕ Нет сканир.</span><span class="arrow-down">▾</span>';
+        menu.querySelector('.opt-noscan').classList.add('active');
+      } else {
+        btn.innerHTML = '<span>Отсканировано</span><span class="arrow-down">▾</span>';
+      }
+
+      menu.classList.remove('open');
+      wrap.classList.remove('menu-open');
+      saveCurrentDay();
+    }
+
+    function toggleOzonScan(btn) {
+      const isScanned = btn.classList.toggle('scanned');
+      const row = btn.closest('.store-row');
+      row.classList.toggle('is-scanned', isScanned);
+      row.dataset.status = isScanned ? 'scanned' : '';
+      btn.innerHTML = isScanned ? '✓ Отсканировано' : 'Отсканировано';
+      saveCurrentDay();
+    }
+
+    function addShiftRow(shiftKey) {
+      const list = document.getElementById(`shift-list-${shiftKey}`);
+      const count = list.querySelectorAll('.store-row').length;
+      const nextName = WB_DEFAULT_STORES[count] || `Точка ${count + 1}`;
+      const newRow = createStoreRow(nextName, '', '', shiftKey);
+      list.appendChild(newRow);
+
+      const nameInput = newRow.querySelector('.store-number-input');
+      nameInput.focus();
+      nameInput.select();
+      saveCurrentDay();
+    }
+
+    function addOzonRow() {
+      const container = document.getElementById('main-content');
+      let listWrap = document.getElementById('ozon-list-wrap');
+      if (!listWrap) {
+        container.innerHTML = '';
+        listWrap = document.createElement('div');
+        listWrap.id = 'ozon-list-wrap';
+        listWrap.style.display = 'flex';
+        listWrap.style.flexDirection = 'column';
+        listWrap.style.gap = '8px';
+        container.appendChild(listWrap);
+      }
+
+      const nextNum = listWrap.querySelectorAll('.store-row').length + 1;
+      const newRow = createStoreRow(`№${nextNum}`, '', '', null);
+      listWrap.appendChild(newRow);
+      newRow.querySelector('.qty-input').focus();
+      saveCurrentDay();
+    }
+
+    function handleAddStoreClick() {
+      if (currentMarket === 'wb') {
+        const openCard = document.querySelector('.shift-card.open') || document.querySelector('.shift-card');
+        if (openCard) {
+          openCard.classList.add('open');
+          addShiftRow(openCard.dataset.shift);
+        }
+      } else {
+        addOzonRow();
+      }
+    }
+
+    function confirmRemoveRow(btn) {
+      const row = btn.closest('.store-row');
+      const input = row.querySelector('.store-number-input');
+      const name = input ? input.value.trim() : 'точку';
+      const qty = row.querySelector('.qty-input').value;
+      const qtyText = (qty && qty !== '0') ? ` (штук: ${qty})` : '';
+
+      showConfirmModal({
+        title: 'Удалить точку?',
+        desc: `Вы действительно хотите удалить «${name}»${qtyText}? Данные строки будут стёрты.`,
+        icon: '🗑️',
+        confirmText: 'Удалить',
+        onConfirm: () => {
+          row.remove();
+          if (currentMarket === 'ozon') {
+            renumberOzonRows();
+            const listWrap = document.getElementById('ozon-list-wrap');
+            if (listWrap && listWrap.children.length === 0) {
+              renderCurrentDay();
+            }
+          }
+          saveCurrentDay();
+        }
+      });
+    }
+
+    function renumberOzonRows() {
+      const listWrap = document.getElementById('ozon-list-wrap');
+      if (!listWrap) return;
+      listWrap.querySelectorAll('.store-row').forEach((row, idx) => {
+        const input = row.querySelector('.store-number-input');
+        if (input) input.value = `№${idx + 1}`;
+      });
+    }
+
+    /* Сохранение и пересчет */
+    function saveCurrentDay() {
+      const db = getAllData();
+
+      if (currentMarket === 'wb') {
+        const morningRows = document.querySelectorAll('#shift-list-morning .store-row');
+        const eveningRows = document.querySelectorAll('#shift-list-evening .store-row');
+
+        const mapRows = (rows) => Array.from(rows).map(r => ({
+          storeNumber: r.querySelector('.store-number-input').value.trim(),
+          qty: r.querySelector('.qty-input').value,
+          scanned: r.dataset.status || ''
+        }));
+
+        db[currentDate] = {
+          morning: mapRows(morningRows),
+          evening: mapRows(eveningRows)
+        };
+      } else {
+        const rows = document.querySelectorAll('#ozon-list-wrap .store-row');
+        if (rows.length === 0) {
+          delete db[currentDate];
+        } else {
+          db[currentDate] = Array.from(rows).map(r => ({
+            storeNumber: r.querySelector('.store-number-input').value.trim(),
+            qty: r.querySelector('.qty-input').value,
+            scanned: r.dataset.status || ''
+          }));
+        }
+      }
+
+      saveAllData(db);
+      recalculateAll();
+      renderRibbon(false);
+    }
+
+    function recalculateAll() {
+      let totalQty = 0;
+      let totalStores = 0;
+      let totalScanned = 0;
+
+      if (currentMarket === 'wb') {
+        const calcShift = (shiftKey) => {
+          let shiftQty = 0;
+          let shiftScanned = 0;
+          const rows = document.querySelectorAll(`#shift-list-${shiftKey} .store-row`);
+          rows.forEach(r => {
+            const raw = r.querySelector('.qty-input').value;
+            const val = raw === '' ? 0 : Math.max(0, parseInt(raw) || 0);
+            shiftQty += val;
+            if (r.dataset.status === 'scanned') shiftScanned++;
+          });
+
+          const badge = document.querySelector(`.shift-badge-${shiftKey}`);
+          if (badge) badge.textContent = `${shiftQty} шт. (${shiftScanned}/${rows.length})`;
+
+          totalQty += shiftQty;
+          totalStores += rows.length;
+          totalScanned += shiftScanned;
+        };
+
+        calcShift('morning');
+        calcShift('evening');
+      } else {
+        const rows = document.querySelectorAll('#ozon-list-wrap .store-row');
+        rows.forEach(r => {
+          const raw = r.querySelector('.qty-input').value;
+          const val = raw === '' ? 0 : Math.max(0, parseInt(raw) || 0);
+          totalQty += val;
+          if (r.dataset.status === 'scanned') totalScanned++;
+        });
+        totalStores = rows.length;
+      }
+
+      document.getElementById('day-total-qty').textContent = `${totalQty} шт.`;
+      document.getElementById('summary-stores-count').textContent = `${totalStores} точ.`;
+
+      const scannedLabel = document.getElementById('summary-scanned-count');
+      if (totalScanned > 0) {
+        scannedLabel.textContent = `(${totalScanned} отскан.)`;
+      } else {
+        scannedLabel.textContent = '';
+      }
+    }
+
+    /* Модалка сброса данных */
+    function toggleResetModal(show) {
+      const modal = document.getElementById('reset-modal');
+      modal.classList.toggle('active', show);
+    }
+
+    function resetDayOnly() {
+      const db = getAllData();
+
+      if (currentMarket === 'wb') {
+        const morningRows = document.querySelectorAll('#shift-list-morning .store-row');
+        const eveningRows = document.querySelectorAll('#shift-list-evening .store-row');
+
+        const mapReset = (rows, defaultList) => {
+          if (rows.length === 0) return defaultList.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
+          return Array.from(rows).map(r => ({
+            storeNumber: r.querySelector('.store-number-input').value.trim(),
+            qty: '',
+            scanned: ''
+          }));
+        };
+
+        db[currentDate] = {
+          morning: mapReset(morningRows, WB_DEFAULT_STORES),
+          evening: mapReset(eveningRows, WB_DEFAULT_STORES)
+        };
+      } else {
+        const ozonRows = document.querySelectorAll('#ozon-list-wrap .store-row');
+        if (ozonRows.length > 0) {
+          db[currentDate] = Array.from(ozonRows).map((r, idx) => ({
+            storeNumber: `№${idx + 1}`,
+            qty: '',
+            scanned: ''
+          }));
+        } else {
+          delete db[currentDate];
+        }
+      }
+
+      saveAllData(db);
+      renderCurrentDay();
+      toggleResetModal(false);
+    }
+
+    function resetEntireDatabase() {
+      toggleResetModal(false);
+      const marketName = (currentMarket === 'wb') ? 'Wildberries' : 'Ozon';
+
+      showConfirmModal({
+        title: 'Очистить всю базу?',
+        desc: `Все сохранённые дни, точки и история отправлений для ${marketName} будут удалены без возможности восстановления.`,
+        icon: '⚠️',
+        confirmText: 'Очистить всё',
+        onConfirm: () => {
+          localStorage.removeItem(getStorageKey());
+          renderRibbon(false);
+          renderCurrentDay();
+        }
+      });
+    }
+
+    /* Модалка истории */
+    function toggleHistory(show) {
+      const modal = document.getElementById('history-modal');
+      modal.classList.toggle('active', show);
+
+      if (show) {
+        const db = getAllData();
+        const list = document.getElementById('history-items');
+        list.innerHTML = '';
+
+        const dates = Object.keys(db).sort().reverse();
+        if (dates.length === 0) {
+          list.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:20px;">Нет сохранённых дней</div>';
+          return;
+        }
+
+        dates.forEach(d => {
+          let sumQty = 0;
+          let count = 0;
+          let scanned = 0;
+
+          if (currentMarket === 'wb') {
+            const morningItems = db[d].morning || db[d].day || [];
+            const eveItems = db[d].evening || [];
+            const allItems = [...morningItems, ...eveItems];
+            sumQty = allItems.reduce((acc, cur) => acc + (parseInt(cur.qty) || 0), 0);
+            count = allItems.length;
+            scanned = allItems.filter(i => i.scanned === 'scanned' || i.scanned === true).length;
+          } else {
+            const items = db[d] || [];
+            sumQty = items.reduce((acc, cur) => acc + (parseInt(cur.qty) || 0), 0);
+            count = items.length;
+            scanned = items.filter(i => i.scanned === 'scanned' || i.scanned === true).length;
+          }
+
+          const dateTitle = new Date(d + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+
+          const row = document.createElement('div');
+          row.className = 'history-row';
+          row.innerHTML = `
+            <div>
+              <div style="font-weight:700;font-size:14px;">${dateTitle}</div>
+              <div style="font-size:12px;color:var(--text-muted)">Точек: ${count} (отскан. ${scanned})</div>
+            </div>
+            <div style="font-weight:800;font-size:15px;color:var(--primary);">${sumQty} шт. ›</div>
+          `;
+          row.onclick = () => {
+            currentDate = d;
+            renderRibbon(true);
+            renderCurrentDay();
+            toggleHistory(false);
+          };
+          list.appendChild(row);
+        });
+      }
+    }
+
+    function escapeHtml(text) {
+      return (text || '').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
