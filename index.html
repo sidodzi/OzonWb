@@ -435,10 +435,10 @@
       display: flex;
     }
 
-    /* ЕДИНЫЕ СЕТКИ ШАПОК И СТРОК */
+    /* СЕТКИ ШАПОК И СТРОК (Колонка количества расширена до 72px) */
     .shift-table-header {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1.15fr) 28px;
+      grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1.15fr) 28px;
       gap: 6px;
       align-items: center;
       padding: 2px 7px;
@@ -448,7 +448,7 @@
 
     .ozon-table-header {
       display: grid;
-      grid-template-columns: 52px 66px minmax(0, 1fr) 28px;
+      grid-template-columns: 48px 72px minmax(0, 1fr) 28px;
       gap: 6px;
       align-items: center;
       padding: 2px 7px;
@@ -512,7 +512,7 @@
     /* Строка точки WB */
     body.theme-wb .store-row {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1.15fr) 28px;
+      grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1.15fr) 28px;
       gap: 6px;
       align-items: center;
     }
@@ -520,7 +520,7 @@
     /* Строка точки Ozon */
     body.theme-ozon .store-row {
       display: grid;
-      grid-template-columns: 52px 66px minmax(0, 1fr) 28px;
+      grid-template-columns: 48px 72px minmax(0, 1fr) 28px;
       gap: 6px;
       align-items: center;
     }
@@ -579,13 +579,14 @@
       position: relative;
     }
 
+    /* Исправленный инпут количества: отступ справа 24px исключает наезд на шт. */
     .qty-input {
       width: 100%;
       height: 32px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 4px 20px 4px 5px;
-      font-size: 14px;
+      padding: 4px 24px 4px 4px;
+      font-size: 13.5px;
       font-weight: 800;
       text-align: right;
       color: var(--text);
@@ -598,10 +599,11 @@
     }
     .qty-unit {
       position: absolute;
-      right: 5px;
+      right: 4px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 10px;
+      font-size: 9.5px;
+      line-height: 1;
       color: var(--text-muted);
       font-weight: 700;
       pointer-events: none;
@@ -1626,6 +1628,7 @@
             class="qty-input" 
             value="${qty === '' ? '' : Math.max(0, parseInt(qty, 10) || 0)}" 
             placeholder="0" 
+            onfocus="this.select()"
             oninput="handleQtyInput(this)"
             onkeydown="handleQtyKey(event, this)">
           <span class="qty-unit">шт.</span>
