@@ -435,7 +435,7 @@
       display: flex;
     }
 
-    /* СЕТКИ ШАПОК И СТРОК (Колонка количества расширена до 72px) */
+    /* СЕТКИ ШАПОК И СТРОК */
     .shift-table-header {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1.15fr) 28px;
@@ -565,13 +565,47 @@
       box-shadow: 0 0 0 2px var(--primary-light);
     }
 
+    /* Акцентный заметный номер точки Ozon */
     .store-number-input.is-readonly {
-      background: var(--bg);
-      border-color: transparent;
-      color: var(--text-muted);
+      background: var(--primary-light);
+      border: 1px solid rgba(0, 91, 255, 0.22);
+      color: var(--primary);
       cursor: default;
       pointer-events: none;
-      font-size: 12.5px;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 2px;
+      letter-spacing: -0.2px;
+      transition: all 0.15s ease;
+    }
+
+    body.dark-mode .store-number-input.is-readonly {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: #60a5fa;
+    }
+
+    /* Подсветка номера при отметке сканирования */
+    .store-row.is-scanned .store-number-input.is-readonly {
+      background: var(--card-bg);
+      border-color: var(--success);
+      color: var(--success);
+    }
+    body.dark-mode .store-row.is-scanned .store-number-input.is-readonly {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .store-row.is-no-scan .store-number-input.is-readonly {
+      background: var(--card-bg);
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+    body.dark-mode .store-row.is-no-scan .store-number-input.is-readonly {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
     }
 
     .qty-wrap {
@@ -579,7 +613,6 @@
       position: relative;
     }
 
-    /* Исправленный инпут количества: отступ справа 24px исключает наезд на шт. */
     .qty-input {
       width: 100%;
       height: 32px;
@@ -1495,9 +1528,7 @@
 
       const currentHour = new Date().getHours();
       
-      // Утро: с 06:00 до 14:59
       const isMorningActive = (currentHour >= 6 && currentHour < 15);
-      // Вечер: с 15:00 до 05:59 утра
       const isEveningActive = (currentHour >= 15 || currentHour < 6);
 
       container.appendChild(createShiftAccordion('morning', ICONS.sun, 'Утро', morningData, isMorningActive));
@@ -1672,6 +1703,12 @@
           allQtyInputs[index + 1].select();
         } else {
           handleAddStoreClick();
+          const updated = Array.from(document.querySelectorAll('.qty-input'));
+          const next = updated[index + 1];
+          if (next) {
+            next.focus();
+            next.select();
+          }
         }
       }
     }
@@ -1743,7 +1780,6 @@
       const nextNum = listWrap.querySelectorAll('.store-row').length + 1;
       const newRow = createStoreRow(`№${nextNum}`, '', '', null);
       listWrap.appendChild(newRow);
-      newRow.querySelector('.qty-input').focus();
       saveCurrentDay();
     }
 
@@ -1759,6 +1795,7 @@
       }
     }
 
+    /* Удаление точки с корректным сохранением */
     function confirmRemoveRow(btn) {
       const row = btn.closest('.store-row');
       const input = row.querySelector('.store-number-input');
@@ -1774,12 +1811,14 @@
           row.remove();
           if (currentMarket === 'ozon') {
             renumberOzonRows();
+          }
+          saveCurrentDay();
+          if (currentMarket === 'ozon') {
             const listWrap = document.getElementById('ozon-list-wrap');
             if (listWrap && listWrap.children.length === 0) {
               renderCurrentDay();
             }
           }
-          saveCurrentDay();
         }
       });
     }
