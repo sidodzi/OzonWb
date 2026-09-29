@@ -114,6 +114,12 @@
       justify-content: space-between;
     }
 
+    .header-left-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     /* Переключатель маркетплейсов */
     .market-switch-group {
       display: inline-flex;
@@ -186,6 +192,50 @@
       box-shadow: 0 0 6px rgba(217, 36, 184, 0.6);
     }
 
+    /* Кнопка Блокнота в шапке */
+    .header-action-btn {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      width: 34px;
+      height: 34px;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      position: relative;
+      flex-shrink: 0;
+    }
+    body.dark-mode .header-action-btn {
+      background: var(--card-bg);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .header-action-btn:active {
+      transform: scale(0.92);
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .note-badge-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 1.5px solid var(--primary);
+      display: none;
+    }
+    body.dark-mode .note-badge-dot {
+      border-color: #151922;
+    }
+    .note-badge-dot.active {
+      display: block;
+    }
+
     .header-right-group {
       display: flex;
       align-items: center;
@@ -228,10 +278,11 @@
       color: var(--text-muted);
     }
     .stat-value {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 800;
       color: #ffffff;
       line-height: 1.1;
+      white-space: nowrap;
     }
     body.dark-mode .stat-value {
       color: var(--text);
@@ -376,6 +427,385 @@
       touch-action: pan-y;
     }
 
+    /* КНОПКА-КОРОБКА WB НАД СМЕНАМИ */
+    .wb-boxes-card-btn {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 2px 7px rgba(0, 0, 0, 0.05);
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .wb-boxes-card-btn:active {
+      transform: scale(0.985);
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    .wb-boxes-card-btn .left-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .wb-boxes-card-btn .box-icon-container {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    body.dark-mode .wb-boxes-card-btn .box-icon-container {
+      background: rgba(217, 36, 184, 0.15);
+      color: #f472b6;
+    }
+    .wb-boxes-card-btn .title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+    .wb-boxes-card-btn .box-main-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .wb-boxes-card-btn .box-sub-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .wb-boxes-card-btn .badge-pill {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid rgba(203, 17, 171, 0.25);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    body.dark-mode .wb-boxes-card-btn .badge-pill {
+      border-color: rgba(217, 36, 184, 0.35);
+      background: rgba(217, 36, 184, 0.15);
+      color: #f472b6;
+    }
+    .wb-boxes-card-btn.has-boxes .badge-pill {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    /* ВКЛАДКИ В МОДАЛКЕ КОРОБОВ */
+    .modal-tab-group {
+      display: flex;
+      background: var(--bg);
+      border-radius: 9px;
+      padding: 3px;
+      gap: 4px;
+      margin-bottom: 8px;
+      border: 1px solid var(--border);
+    }
+    .modal-tab-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .modal-tab-btn:active { transform: scale(0.98); }
+    .modal-tab-btn.active {
+      background: var(--card-bg);
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    body.dark-mode .modal-tab-btn.active {
+      background: #252d3d;
+      color: #ffffff;
+    }
+    .modal-tab-btn .tab-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      line-height: 1;
+    }
+    body.dark-mode .modal-tab-btn .tab-badge {
+      background: rgba(217, 36, 184, 0.2);
+      color: #f472b6;
+    }
+    .modal-tab-btn .tab-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* --------------------------------------------- */
+    /* СТИЛИ КОМПАКТНЫХ КАРТОЧЕК ЗАМЕТОК */
+    /* --------------------------------------------- */
+    .notes-sheet {
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 14px 20px;
+    }
+
+    .notes-view-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+    }
+
+    .notes-main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2px 4px 6px;
+    }
+
+    .notes-main-title {
+      font-size: 27px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .notes-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-create-note {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .btn-create-note:active {
+      transform: scale(0.96);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* 2-колоночная сетка компактных карточек */
+    .notes-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      overflow-y: auto;
+      max-height: 64vh;
+      padding: 4px 2px 14px;
+      scrollbar-width: none;
+    }
+    .notes-cards-grid::-webkit-scrollbar { display: none; }
+
+    /* Компактная карточка: виден только заголовок и дата */
+    .note-card-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 13px 12px 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 82px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      transition: transform 0.12s ease, border-color 0.15s ease, background-color 0.15s ease;
+      position: relative;
+      -webkit-touch-callout: none;
+      user-select: none;
+    }
+    .note-card-item:active {
+      transform: scale(0.97);
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .note-card-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+      word-break: break-word;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-card-date {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-top: 8px;
+      opacity: 0.85;
+    }
+
+    .notes-empty-state {
+      grid-column: span 2;
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Экран редактора заметки */
+    .note-editor-view {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      height: 100%;
+      min-height: 380px;
+    }
+
+    .note-editor-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .btn-editor-back {
+      border: none;
+      background: transparent;
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 6px;
+      border-radius: 6px;
+    }
+    .btn-editor-back:active {
+      background: var(--primary-light);
+    }
+
+    .note-editor-date-badge {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .note-editor-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-save-note-header {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .btn-save-note-header:active {
+      background: var(--primary-dark);
+      transform: scale(0.96);
+    }
+
+    .editor-icon-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 8px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .editor-icon-btn:active {
+      transform: scale(0.92);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    .editor-icon-btn.btn-trash:active {
+      background: var(--danger-light);
+      color: var(--danger);
+    }
+
+    .note-input-title {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+    }
+    .note-input-title:focus {
+      border-bottom-color: var(--border);
+    }
+
+    .note-input-body {
+      width: 100%;
+      flex: 1;
+      min-height: 180px;
+      max-height: 48vh;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      resize: none;
+    }
+
     /* Аккордеоны смен */
     .shift-card {
       background: var(--card-bg);
@@ -466,8 +896,18 @@
       user-select: none;
     }
 
+    .boxes-modal-table-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 88px 28px;
+      gap: 6px;
+      align-items: center;
+      padding: 4px 7px;
+      user-select: none;
+    }
+
     .shift-table-header .col-lbl,
-    .ozon-table-header .col-lbl {
+    .ozon-table-header .col-lbl,
+    .boxes-modal-table-header .col-lbl {
       font-size: 9px;
       font-weight: 800;
       color: var(--text-muted);
@@ -478,7 +918,8 @@
       text-overflow: ellipsis;
     }
 
-    .shift-table-header .col-name {
+    .shift-table-header .col-name,
+    .boxes-modal-table-header .col-name {
       text-align: left;
       padding-left: 7px;
     }
@@ -487,7 +928,8 @@
     }
 
     .shift-table-header .col-qty,
-    .ozon-table-header .col-qty {
+    .ozon-table-header .col-qty,
+    .boxes-modal-table-header .col-qty {
       text-align: center;
     }
 
@@ -497,7 +939,8 @@
     }
 
     .shift-table-header .col-del,
-    .ozon-table-header .col-del {
+    .ozon-table-header .col-del,
+    .boxes-modal-table-header .col-del {
       width: 28px;
     }
 
@@ -519,15 +962,20 @@
       transition: border-color .15s, background-color .15s;
     }
 
-    /* Строка точки WB */
-    body.theme-wb .store-row {
+    body.theme-wb .store-row:not(.boxes-modal-row) {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1.15fr) 28px;
       gap: 6px;
       align-items: center;
     }
 
-    /* Строка точки Ozon */
+    .store-row.boxes-modal-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 88px 28px;
+      gap: 6px;
+      align-items: center;
+    }
+
     body.theme-ozon .store-row {
       display: grid;
       grid-template-columns: 48px 72px minmax(0, 1fr) 28px;
@@ -544,7 +992,6 @@
       background: var(--warning-light);
     }
 
-    /* Поле названия точки / номера */
     .store-number-wrap {
       width: 100%;
       min-width: 0;
@@ -565,7 +1012,8 @@
       transition: border-color .15s, box-shadow .15s;
     }
 
-    body.theme-wb .store-number-input {
+    body.theme-wb .store-number-input,
+    .boxes-modal-row .store-number-input {
       text-align: left;
       padding-left: 7px;
     }
@@ -575,7 +1023,6 @@
       box-shadow: 0 0 0 2px var(--primary-light);
     }
 
-    /* Акцентный заметный номер точки Ozon */
     .store-number-input.is-readonly {
       background: var(--primary-light);
       border: 1px solid rgba(0, 91, 255, 0.22);
@@ -595,29 +1042,6 @@
       color: #60a5fa;
     }
 
-    /* Подсветка номера при отметке сканирования */
-    .store-row.is-scanned .store-number-input.is-readonly {
-      background: var(--card-bg);
-      border-color: var(--success);
-      color: var(--success);
-    }
-    body.dark-mode .store-row.is-scanned .store-number-input.is-readonly {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: rgba(16, 185, 129, 0.4);
-      color: #34d399;
-    }
-
-    .store-row.is-no-scan .store-number-input.is-readonly {
-      background: var(--card-bg);
-      border-color: var(--warning);
-      color: var(--warning);
-    }
-    body.dark-mode .store-row.is-no-scan .store-number-input.is-readonly {
-      background: rgba(245, 158, 11, 0.15);
-      border-color: rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
-    }
-
     .qty-wrap {
       width: 100%;
       position: relative;
@@ -628,18 +1052,29 @@
       height: 32px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 4px 24px 4px 4px;
+      padding: 4px 26px 4px 4px;
       font-size: 13.5px;
       font-weight: 800;
       text-align: right;
       color: var(--text);
       outline: none;
       background: var(--card-bg);
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
-    .qty-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-light);
+    .qty-input:active {
+      transform: scale(0.97);
     }
+    .qty-input.numpad-active {
+      border-color: var(--primary) !important;
+      background: var(--primary-light) !important;
+      color: var(--primary) !important;
+      box-shadow: 0 0 0 2px rgba(0, 91, 255, 0.25) !important;
+    }
+    body.theme-wb .qty-input.numpad-active {
+      box-shadow: 0 0 0 2px rgba(203, 17, 171, 0.25) !important;
+    }
+
     .qty-unit {
       position: absolute;
       right: 4px;
@@ -715,8 +1150,27 @@
       cursor: pointer;
       text-align: center;
       margin-top: 3px;
+      transition: background 0.15s;
     }
     .btn-add-row-shift:active { background: var(--primary-light); }
+
+    .btn-sync-stores {
+      background: var(--primary-light);
+      border: 1px solid transparent;
+      color: var(--primary);
+      border-radius: 7px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 7px 11px;
+      cursor: pointer;
+      margin-top: 3px;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-sync-stores:active {
+      transform: scale(0.97);
+      background: var(--primary-light-hover);
+    }
 
     /* Пустой день */
     .empty-day-box {
@@ -961,7 +1415,7 @@
     }
     .btn-sheet-cancel:active { background: var(--border); }
 
-    /* Окно подтверждения удаления */
+    /* Окно подтверждения */
     .confirm-modal-overlay {
       position: fixed;
       inset: 0;
@@ -1062,6 +1516,257 @@
       background: var(--primary-dark);
       transform: scale(0.98);
     }
+
+    /* Кнопки диалога выбора удаления */
+    .delete-choice-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-choice-clear {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 800;
+      border: 1px solid rgba(0, 91, 255, 0.22);
+    }
+    body.theme-wb .btn-choice-clear {
+      border-color: rgba(203, 17, 171, 0.25);
+    }
+    .btn-choice-clear:active {
+      background: var(--primary-light-hover);
+      transform: scale(0.985);
+    }
+
+    .btn-choice-delete {
+      background: var(--danger);
+      color: #ffffff;
+      font-weight: 800;
+      box-shadow: 0 3px 10px rgba(250, 56, 62, 0.2);
+    }
+    .btn-choice-delete:active {
+      transform: scale(0.985);
+      opacity: 0.92;
+    }
+
+    /* ВСТРОЕННЫЙ ЦИФРОВОЙ СКЛАДСКОЙ НУМПАД */
+    .numpad-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(2px);
+      z-index: 550;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+    .numpad-backdrop.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .numpad-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid var(--border);
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+      z-index: 560;
+      transform: translateY(105%);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 12px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+    .numpad-drawer.active {
+      transform: translateY(0);
+    }
+
+    .numpad-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 9px;
+      gap: 10px;
+    }
+
+    .numpad-target-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .numpad-target-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .numpad-target-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .numpad-display-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 10px;
+    }
+
+    .numpad-display-val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      min-width: 25px;
+      text-align: right;
+    }
+
+    .numpad-display-unit {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .numpad-quick-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .numpad-quick-btn {
+      background: var(--primary-light);
+      border: 1px solid rgba(0, 91, 255, 0.2);
+      color: var(--primary);
+      border-radius: 9px;
+      height: 38px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s ease;
+    }
+    body.theme-wb .numpad-quick-btn {
+      border-color: rgba(203, 17, 171, 0.25);
+    }
+    .numpad-quick-btn:active {
+      transform: scale(0.95);
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .numpad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .numpad-key {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      height: 48px;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.1s ease;
+    }
+    .numpad-key:active {
+      transform: scale(0.94);
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .numpad-key.key-clear {
+      color: var(--danger);
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .numpad-key.key-clear:active {
+      background: var(--danger-light);
+      color: var(--danger);
+      border-color: var(--danger);
+    }
+
+    .numpad-key.key-backspace {
+      color: var(--text);
+    }
+
+    .numpad-actions-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .numpad-nav-btn {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      height: 44px;
+      padding: 0 14px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.12s ease;
+    }
+    .numpad-nav-btn:active {
+      transform: scale(0.96);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .numpad-done-btn {
+      flex: 1;
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      height: 44px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      transition: all 0.12s ease;
+    }
+    .numpad-done-btn:active {
+      transform: scale(0.97);
+      background: var(--primary-dark);
+    }
   </style>
 </head>
 <body class="theme-ozon">
@@ -1069,15 +1774,28 @@
   <header class="header">
     <div class="header-top">
       <div class="header-top-content">
-        <!-- Кнопки быстрого переключения Ozon / WB -->
-        <div class="market-switch-group">
-          <button type="button" class="market-switch-btn active" id="btn-market-ozon" onclick="selectMarket('ozon')">
-            <span class="market-dot ozon"></span>
-            <span>Ozon</span>
-          </button>
-          <button type="button" class="market-switch-btn" id="btn-market-wb" onclick="selectMarket('wb')">
-            <span class="market-dot wb"></span>
-            <span>Wildberries</span>
+        <!-- Левая группа: Кнопки Ozon / WB + Кнопка Блокнота -->
+        <div class="header-left-group">
+          <div class="market-switch-group">
+            <button type="button" class="market-switch-btn active" id="btn-market-ozon" onclick="selectMarket('ozon')">
+              <span class="market-dot ozon"></span>
+              <span>Ozon</span>
+            </button>
+            <button type="button" class="market-switch-btn" id="btn-market-wb" onclick="selectMarket('wb')">
+              <span class="market-dot wb"></span>
+              <span>Wildberries</span>
+            </button>
+          </div>
+
+          <!-- Кнопка Блокнота -->
+          <button type="button" class="header-action-btn" id="btn-notepad" onclick="toggleNotesModal(true)" title="Заметки">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              <line x1="8" y1="7" x2="16" y2="7"/>
+              <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <span class="note-badge-dot" id="note-badge-dot"></span>
           </button>
         </div>
 
@@ -1147,17 +1865,161 @@
     </div>
   </aside>
 
-  <!-- Окно подтверждения удаления -->
+  <!-- ШТОРКА «ЗАМЕТКИ» С КОМПАКТНЫМИ КАРТОЧКАМИ -->
+  <div class="modal-overlay" id="notes-modal" onclick="if(event.target === this) toggleNotesModal(false)">
+    <div class="modal-sheet notes-sheet">
+      <!-- 1. Главный экран списка заметок (2-колоночная сетка только с заголовками) -->
+      <div class="notes-view-list" id="notes-view-list">
+        <div class="notes-main-header">
+          <div class="notes-main-title">Заметки</div>
+          <div class="notes-header-actions">
+            <button type="button" class="btn-create-note" onclick="openNoteEditor(null)">+ Новая</button>
+            <button style="border:none;background:none;font-size:24px;cursor:pointer;color:var(--text-muted);line-height:1;" onclick="toggleNotesModal(false)">×</button>
+          </div>
+        </div>
+
+        <div class="notes-cards-grid" id="notes-cards-grid">
+          <!-- Карточки генерируются скриптом -->
+        </div>
+      </div>
+
+      <!-- 2. Экран редактора заметки -->
+      <div class="note-editor-view" id="note-editor-view">
+        <div class="note-editor-nav">
+          <button type="button" class="btn-editor-back" onclick="saveAndCloseNoteEditor()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <span>Заметки</span>
+          </button>
+          <span class="note-editor-date-badge" id="editor-date-badge">26 Март</span>
+          <div class="note-editor-actions">
+            <button type="button" class="btn-save-note-header" onclick="saveAndCloseNoteEditor()">Сохранить</button>
+            <button type="button" class="editor-icon-btn" id="btn-copy-note-text" title="Скопировать текст" onclick="copyCurrentEditorNote()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+            <button type="button" class="editor-icon-btn btn-trash" title="Удалить заметку" onclick="deleteCurrentEditorNote()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <input type="text" class="note-input-title" id="note-edit-title" placeholder="Название" oninput="saveCurrentEditingNote()">
+        <textarea class="note-input-body" id="note-edit-body" placeholder="Текст заметки..." oninput="saveCurrentEditingNote()"></textarea>
+
+        <div style="margin-top:auto; padding-top:10px;">
+          <button type="button" class="btn-add" style="width:100%; padding:12px; font-size:14px; font-weight:800;" onclick="saveAndCloseNoteEditor()">
+            Сохранить
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Шторка учёта коробов WB -->
+  <div class="modal-overlay" id="boxes-modal" onclick="if(event.target === this) toggleBoxesModal(false)">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="color:var(--primary); display:flex; align-items:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 12v10"/><path d="m7.5 4.5 9 5.2"/></svg>
+          </span>
+          <h3>Учёт коробов</h3>
+        </div>
+        <button style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-muted);line-height:1;" onclick="toggleBoxesModal(false)">×</button>
+      </div>
+
+      <div class="modal-tab-group">
+        <button type="button" class="modal-tab-btn active" id="btn-box-tab-morning" onclick="switchBoxesTab('morning')">
+          <span class="tab-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          </span>
+          <span>Утро</span>
+          <span class="tab-badge" id="box-tab-badge-morning">0 кор.</span>
+        </button>
+        <button type="button" class="modal-tab-btn" id="btn-box-tab-evening" onclick="switchBoxesTab('evening')">
+          <span class="tab-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </span>
+          <span>Вечер</span>
+          <span class="tab-badge" id="box-tab-badge-evening">0 кор.</span>
+        </button>
+      </div>
+
+      <div class="boxes-modal-table-header">
+        <span class="col-lbl col-name">Название точки</span>
+        <span class="col-lbl col-qty" style="text-align:right; padding-right:8px;">Короба</span>
+        <span class="col-lbl col-del"></span>
+      </div>
+
+      <div class="shift-rows-list boxes-shift-container" id="boxes-modal-list-morning" style="max-height: 44vh; overflow-y: auto; padding: 2px 0;"></div>
+      <div class="shift-rows-list boxes-shift-container" id="boxes-modal-list-evening" style="max-height: 44vh; overflow-y: auto; padding: 2px 0; display:none;"></div>
+
+      <div style="display:flex; gap:6px; margin-top:8px;">
+        <button type="button" class="btn-add-row-shift" style="flex:1; margin-top:0;" onclick="addActiveBoxModalRow()">+ Добавить точку</button>
+        <button type="button" class="btn-sync-stores" id="btn-sync-boxes" style="margin-top:0;" onclick="syncBoxesFromActiveShift()">Взять из «Утро»</button>
+      </div>
+
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button type="button" class="btn-sub-action" id="btn-copy-boxes" style="flex:1; padding:11px 12px; justify-content:center; font-size:13px; font-weight:800; border-radius:9px;" onclick="copyBoxesToClipboard()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="btn-copy-boxes-text">Скопировать</span>
+        </button>
+        <button type="button" class="btn-add" style="flex:1;" onclick="toggleBoxesModal(false)">Готово</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно действий с заметкой по долгому нажатию -->
+  <div class="confirm-modal-overlay" id="note-longpress-modal" onclick="if(event.target === this) closeNoteLongpressModal()">
+    <div class="confirm-card">
+      <div class="confirm-icon-wrap" style="background:var(--danger-light); color:var(--danger);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <div class="confirm-title" id="note-longpress-title">Заметка</div>
+      <div class="confirm-desc">Вы действительно хотите удалить эту заметку?</div>
+      <div class="delete-choice-actions">
+        <button type="button" class="confirm-btn btn-choice-delete" onclick="executeNoteLongpressDelete()">
+          Удалить заметку
+        </button>
+        <button type="button" class="confirm-btn confirm-btn-cancel" onclick="closeNoteLongpressModal()">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно выбора: удалить точку или очистить количество -->
+  <div class="confirm-modal-overlay" id="delete-choice-modal" onclick="if(event.target === this) closeDeleteChoiceModal()">
+    <div class="confirm-card">
+      <div class="confirm-icon-wrap" style="background:var(--danger-light); color:var(--danger);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+      </div>
+      <div class="confirm-title" id="delete-choice-title">Действие с точкой</div>
+      <div class="confirm-desc" id="delete-choice-desc">Выберите, что необходимо сделать с этой точкой</div>
+      <div class="delete-choice-actions">
+        <button type="button" class="confirm-btn btn-choice-clear" id="btn-choice-clear" onclick="executeDeleteChoice('clear')">
+          Очистить количество
+        </button>
+        <button type="button" class="confirm-btn btn-choice-delete" id="btn-choice-delete" onclick="executeDeleteChoice('delete')">
+          Удалить точку
+        </button>
+        <button type="button" class="confirm-btn confirm-btn-cancel" onclick="closeDeleteChoiceModal()">
+          Отмена
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Окно подтверждения -->
   <div class="confirm-modal-overlay" id="confirm-modal" onclick="if(event.target === this) handleConfirmResult(false)">
     <div class="confirm-card">
       <div class="confirm-icon-wrap" id="confirm-icon">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
       </div>
-      <div class="confirm-title" id="confirm-title">Удалить точку?</div>
-      <div class="confirm-desc" id="confirm-desc">Вы действительно хотите удалить эту запись?</div>
+      <div class="confirm-title" id="confirm-title">Подтверждение</div>
+      <div class="confirm-desc" id="confirm-desc">Вы действительно хотите совершить это действие?</div>
       <div class="confirm-actions">
         <button type="button" class="confirm-btn confirm-btn-cancel" onclick="handleConfirmResult(false)">Отмена</button>
-        <button type="button" class="confirm-btn confirm-btn-action" id="confirm-action-btn" onclick="handleConfirmResult(true)">Удалить</button>
+        <button type="button" class="confirm-btn confirm-btn-action" id="confirm-action-btn" onclick="handleConfirmResult(true)">Да</button>
       </div>
     </div>
   </div>
@@ -1177,7 +2039,7 @@
           </div>
           <div class="reset-card-text">
             <div class="reset-card-title">Обнулить текущий день</div>
-            <div class="reset-card-desc">Сбросит штуки и отметки сканирования. Точки останутся.</div>
+            <div class="reset-card-desc">Сбросит штуки, короба и отметки сканирования. Точки останутся.</div>
           </div>
         </div>
 
@@ -1207,14 +2069,68 @@
     </div>
   </div>
 
+  <!-- ВСТРОЕННЫЙ ЦИФРОВОЙ СКЛАДСКОЙ НУМПАД -->
+  <div class="numpad-backdrop" id="numpad-backdrop" onclick="closeNumpad()"></div>
+  <div class="numpad-drawer" id="numpad-drawer">
+    <div class="numpad-header">
+      <div class="numpad-target-info">
+        <span class="numpad-target-title" id="numpad-title">Точка</span>
+        <span class="numpad-target-sub" id="numpad-subtitle">Количество</span>
+      </div>
+      <div class="numpad-display-wrap">
+        <span class="numpad-display-val" id="numpad-display">0</span>
+        <span class="numpad-display-unit" id="numpad-unit">шт.</span>
+      </div>
+    </div>
+
+    <div class="numpad-quick-row">
+      <button type="button" class="numpad-quick-btn" onclick="numpadAdd(1)">+1</button>
+      <button type="button" class="numpad-quick-btn" onclick="numpadAdd(2)">+2</button>
+      <button type="button" class="numpad-quick-btn" onclick="numpadAdd(5)">+5</button>
+      <button type="button" class="numpad-quick-btn" onclick="numpadAdd(10)">+10</button>
+    </div>
+
+    <div class="numpad-grid">
+      <button type="button" class="numpad-key" onclick="numpadDigit('1')">1</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('2')">2</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('3')">3</button>
+
+      <button type="button" class="numpad-key" onclick="numpadDigit('4')">4</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('5')">5</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('6')">6</button>
+
+      <button type="button" class="numpad-key" onclick="numpadDigit('7')">7</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('8')">8</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('9')">9</button>
+
+      <button type="button" class="numpad-key key-clear" onclick="numpadClear()">Сброс</button>
+      <button type="button" class="numpad-key" onclick="numpadDigit('0')">0</button>
+      <button type="button" class="numpad-key key-backspace" onclick="numpadBackspace()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+      </button>
+    </div>
+
+    <div class="numpad-actions-row">
+      <button type="button" class="numpad-nav-btn" onclick="numpadNavigate(-1)" title="Предыдущая строка">‹ Пред.</button>
+      <button type="button" class="numpad-done-btn" onclick="closeNumpad()">Готово ✓</button>
+      <button type="button" class="numpad-nav-btn" onclick="numpadNavigate(1)" title="Следующая строка">След. ›</button>
+    </div>
+  </div>
+
   <script>
     let currentMarket = localStorage.getItem('selected_market') || 'ozon';
     let currentDate = getTodayDateStr();
+    let currentBoxesTab = 'morning';
     let confirmCallback = null;
+    let activeDeleteContext = null;
+    let activeNumpadInput = null;
+    let activeNoteId = null;
+    let activeLongpressNoteId = null;
 
     const ICONS = {
       sun: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
       moon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
+      boxArt: `<svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 12v10"/><path d="m7.5 4.5 9 5.2"/></svg>`,
       chevronDown: `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`,
       check: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
       cross: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
@@ -1244,9 +2160,15 @@
       renderRibbon();
       renderCurrentDay();
       initSwipeNavigation();
+      updateNotepadBadge();
     });
 
-    /* Управление светлой/тёмной темой */
+    function triggerHaptic(duration = 22) {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(duration); } catch(e) {}
+      }
+    }
+
     function toggleThemeMode() {
       const isDark = document.body.classList.toggle('dark-mode');
       localStorage.setItem('app_theme', isDark ? 'dark' : 'light');
@@ -1307,11 +2229,13 @@
     }
 
     function shiftDay(delta) {
+      closeNumpad();
       const [y, m, d] = currentDate.split('-').map(Number);
       const newDate = new Date(y, m - 1, d + delta);
       currentDate = formatDateToYMD(newDate);
       renderRibbon(true);
       renderCurrentDay();
+      updateNotepadBadge();
     }
 
     function showConfirmModal({ title, desc, confirmText = 'Удалить', onConfirm }) {
@@ -1330,15 +2254,104 @@
       confirmCallback = null;
     }
 
+    function confirmRemoveRow(btn) {
+      closeNumpad();
+      const row = btn.closest('.store-row');
+      const input = row.querySelector('.store-number-input');
+      const name = input ? input.value.trim() : 'точку';
+      const qtyField = row.querySelector('.qty-input');
+      const qty = qtyField ? qtyField.value : '';
+      const qtyText = (qty && qty !== '0') ? ` (${qty} шт.)` : '';
+
+      activeDeleteContext = {
+        type: 'main_row',
+        row: row,
+        qtyField: qtyField
+      };
+
+      document.getElementById('delete-choice-title').textContent = `«${name}»${qtyText}`;
+      document.getElementById('delete-choice-desc').textContent = 'Выберите, что необходимо сделать с этой точкой:';
+      document.getElementById('btn-choice-clear').textContent = 'Очистить количество (0 шт.)';
+      document.getElementById('btn-choice-delete').textContent = 'Удалить точку';
+
+      document.getElementById('delete-choice-modal').classList.add('active');
+    }
+
+    function confirmRemoveBoxRow(btn) {
+      closeNumpad();
+      const row = btn.closest('.boxes-modal-row');
+      const name = row.querySelector('.box-name-input')?.value.trim() || 'точку';
+      const qtyField = row.querySelector('.box-qty-input');
+      const qty = qtyField ? qtyField.value : '';
+      const qtyText = (qty && qty !== '0') ? ` (${qty} кор.)` : '';
+
+      activeDeleteContext = {
+        type: 'box_row',
+        row: row,
+        qtyField: qtyField
+      };
+
+      document.getElementById('delete-choice-title').textContent = `«${name}»${qtyText}`;
+      document.getElementById('delete-choice-desc').textContent = 'Выберите, что необходимо сделать с этой точкой:';
+      document.getElementById('btn-choice-clear').textContent = 'Очистить короба (0 кор.)';
+      document.getElementById('btn-choice-delete').textContent = 'Удалить точку';
+
+      document.getElementById('delete-choice-modal').classList.add('active');
+    }
+
+    function closeDeleteChoiceModal() {
+      document.getElementById('delete-choice-modal').classList.remove('active');
+      activeDeleteContext = null;
+    }
+
+    function executeDeleteChoice(action) {
+      if (!activeDeleteContext) return;
+      const { type, row, qtyField } = activeDeleteContext;
+
+      if (action === 'clear') {
+        if (qtyField) qtyField.value = '';
+
+        if (type === 'main_row') {
+          row.dataset.status = '';
+          row.classList.remove('is-scanned', 'is-no-scan');
+          const btnScan = row.querySelector('.btn-scan');
+          if (btnScan) {
+            btnScan.className = 'btn-scan';
+            btnScan.innerHTML = '<span>Не сканировано</span>';
+          }
+        }
+        saveCurrentDay();
+      } else if (action === 'delete') {
+        row.remove();
+        if (type === 'main_row') {
+          if (currentMarket === 'ozon') {
+            renumberOzonRows();
+          }
+          saveCurrentDay();
+          if (currentMarket === 'ozon') {
+            const listWrap = document.getElementById('ozon-list-wrap');
+            if (listWrap && listWrap.children.length === 0) {
+              renderCurrentDay();
+            }
+          }
+        } else if (type === 'box_row') {
+          saveCurrentDay();
+        }
+      }
+
+      closeDeleteChoiceModal();
+    }
+
     function selectMarket(marketKey) {
       if (currentMarket === marketKey) return;
-
+      closeNumpad();
       currentMarket = marketKey;
       localStorage.setItem('selected_market', marketKey);
 
       applyMarketTheme();
       renderRibbon(false);
       renderCurrentDay();
+      updateNotepadBadge();
     }
 
     function applyMarketTheme() {
@@ -1441,9 +2454,11 @@
 
         card.onclick = () => {
           if (currentDate === loopDateStr) return;
+          closeNumpad();
           currentDate = loopDateStr;
           renderRibbon(true);
           renderCurrentDay();
+          updateNotepadBadge();
         };
 
         ribbon.appendChild(card);
@@ -1457,24 +2472,30 @@
     }
 
     function shiftMonth(delta) {
+      closeNumpad();
       const [y, m, d] = currentDate.split('-').map(Number);
       const newDate = new Date(y, m - 1 + delta, 1);
       currentDate = formatDateToYMD(newDate);
       renderRibbon(true);
       renderCurrentDay();
+      updateNotepadBadge();
     }
 
     function onDatePicked(val) {
       if (!val) return;
+      closeNumpad();
       currentDate = val;
       renderRibbon(true);
       renderCurrentDay();
+      updateNotepadBadge();
     }
 
     function goToToday() {
+      closeNumpad();
       currentDate = getTodayDateStr();
       renderRibbon(true);
       renderCurrentDay();
+      updateNotepadBadge();
     }
 
     function capitalize(str) {
@@ -1511,11 +2532,55 @@
     function renderWbContent(container, dayData) {
       const morningData = (dayData && (dayData.morning || dayData.day)) || WB_DEFAULT_STORES.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
       const eveningData = (dayData && dayData.evening) || WB_DEFAULT_STORES.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
+      
+      let boxesRaw = dayData && dayData.boxes;
+      let morningBoxes = null;
+      let eveningBoxes = null;
+
+      if (boxesRaw) {
+        if (Array.isArray(boxesRaw)) {
+          morningBoxes = boxesRaw;
+          eveningBoxes = eveningData.map(item => ({ storeNumber: item.storeNumber, qty: '' }));
+        } else if (typeof boxesRaw === 'object') {
+          morningBoxes = boxesRaw.morning || null;
+          eveningBoxes = boxesRaw.evening || null;
+        }
+      }
+
+      if (!morningBoxes || morningBoxes.length === 0) {
+        morningBoxes = morningData.map(item => ({ storeNumber: item.storeNumber, qty: '' }));
+      }
+      if (!eveningBoxes || eveningBoxes.length === 0) {
+        eveningBoxes = eveningData.map(item => ({ storeNumber: item.storeNumber, qty: '' }));
+      }
+
+      const boxesBtn = document.createElement('div');
+      boxesBtn.className = 'wb-boxes-card-btn';
+      boxesBtn.id = 'wb-boxes-card-trigger';
+      boxesBtn.onclick = () => toggleBoxesModal(true);
+      boxesBtn.innerHTML = `
+        <div class="left-wrap">
+          <div class="box-icon-container">
+            ${ICONS.boxArt}
+          </div>
+          <div class="title-wrap">
+            <span class="box-main-title">Короба</span>
+            <span class="box-sub-desc" id="box-sub-desc">Утро: 0 · Вечер: 0</span>
+          </div>
+        </div>
+        <div class="badge-pill" id="box-top-badge">0 кор.</div>
+      `;
+      container.appendChild(boxesBtn);
+
+      renderBoxesModalList('morning', morningBoxes);
+      renderBoxesModalList('evening', eveningBoxes);
 
       const currentHour = new Date().getHours();
-      
       const isMorningActive = (currentHour >= 6 && currentHour < 15);
       const isEveningActive = (currentHour >= 15 || currentHour < 6);
+
+      currentBoxesTab = isMorningActive ? 'morning' : 'evening';
+      switchBoxesTab(currentBoxesTab);
 
       container.appendChild(createShiftAccordion('morning', ICONS.sun, 'Утро', morningData, isMorningActive));
       container.appendChild(createShiftAccordion('evening', ICONS.moon, 'Вечер', eveningData, isEveningActive));
@@ -1560,7 +2625,6 @@
       card.classList.toggle('open');
     }
 
-    /* Рендер Ozon с табличной шапкой */
     function renderOzonContent(container, dayStores) {
       if (!dayStores || dayStores.length === 0) {
         container.innerHTML = `
@@ -1598,7 +2662,6 @@
       return '';
     }
 
-    /* Унифицированная строка точки для WB и Ozon */
     function createStoreRow(storeNumber = '', qty = '', scanned = '', shiftKey = null) {
       const row = document.createElement('div');
       const status = normalizeStatus(scanned);
@@ -1629,25 +2692,22 @@
         <div class="store-number-wrap">
           <input 
             type="text" 
-            class="store-number-input ${isWB ? '' : 'is-readonly'}" 
+            class="store-number-input" 
             value="${escapeHtml(storeNumber)}" 
             title="${escapeHtml(storeNumber)}"
             placeholder="${isWB ? 'Название' : '№'}"
-            ${isWB ? '' : 'readonly tabindex="-1"'}
+            ${isWB ? '' : 'readonly tabindex="-1" class="store-number-input is-readonly"'}
             oninput="saveCurrentDay()"
             onkeydown="handleStoreInputKey(event, this)">
         </div>
         <div class="qty-wrap">
           <input 
             type="text"
-            inputmode="numeric"
-            pattern="[0-9]*"
+            readonly
             class="qty-input" 
             value="${qty === '' ? '' : Math.max(0, parseInt(qty, 10) || 0)}" 
             placeholder="0" 
-            onfocus="this.select()"
-            oninput="handleQtyInput(this)"
-            onkeydown="handleQtyKey(event, this)">
+            onclick="openNumpad(this)">
           <span class="qty-unit">шт.</span>
         </div>
         <button 
@@ -1662,39 +2722,13 @@
       return row;
     }
 
-    function handleQtyInput(input) {
-      input.value = input.value.replace(/\D/g, '');
-      saveCurrentDay();
-    }
-
     function handleStoreInputKey(e, input) {
       if (e.key === 'Enter') {
         e.preventDefault();
         const row = input.closest('.store-row');
         const qtyField = row.querySelector('.qty-input');
         if (qtyField) {
-          qtyField.focus();
-          qtyField.select();
-        }
-      }
-    }
-
-    function handleQtyKey(e, input) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        const allQtyInputs = Array.from(document.querySelectorAll('.qty-input'));
-        const index = allQtyInputs.indexOf(input);
-        if (index !== -1 && index < allQtyInputs.length - 1) {
-          allQtyInputs[index + 1].focus();
-          allQtyInputs[index + 1].select();
-        } else {
-          handleAddStoreClick();
-          const updated = Array.from(document.querySelectorAll('.qty-input'));
-          const next = updated[index + 1];
-          if (next) {
-            next.focus();
-            next.select();
-          }
+          openNumpad(qtyField);
         }
       }
     }
@@ -1711,6 +2745,8 @@
       row.dataset.status = next;
       row.classList.remove('is-scanned', 'is-no-scan');
       btn.className = 'btn-scan';
+
+      triggerHaptic(20);
 
       if (next === 'scanned') {
         row.classList.add('is-scanned');
@@ -1738,6 +2774,7 @@
       nameInput.focus();
       nameInput.select();
       saveCurrentDay();
+      return newRow;
     }
 
     function addOzonRow() {
@@ -1766,6 +2803,7 @@
       const newRow = createStoreRow(`№${nextNum}`, '', '', null);
       listWrap.appendChild(newRow);
       saveCurrentDay();
+      return newRow;
     }
 
     function handleAddStoreClick() {
@@ -1773,38 +2811,11 @@
         const openCard = document.querySelector('.shift-card.open') || document.querySelector('.shift-card');
         if (openCard) {
           openCard.classList.add('open');
-          addShiftRow(openCard.dataset.shift);
+          return addShiftRow(openCard.dataset.shift);
         }
       } else {
-        addOzonRow();
+        return addOzonRow();
       }
-    }
-
-    function confirmRemoveRow(btn) {
-      const row = btn.closest('.store-row');
-      const input = row.querySelector('.store-number-input');
-      const name = input ? input.value.trim() : 'точку';
-      const qty = row.querySelector('.qty-input').value;
-      const qtyText = (qty && qty !== '0') ? ` (${qty} шт.)` : '';
-
-      showConfirmModal({
-        title: 'Удалить точку?',
-        desc: `Вы действительно хотите удалить «${name}»${qtyText}? Данные строки будут стёрты.`,
-        confirmText: 'Удалить',
-        onConfirm: () => {
-          row.remove();
-          if (currentMarket === 'ozon') {
-            renumberOzonRows();
-          }
-          saveCurrentDay();
-          if (currentMarket === 'ozon') {
-            const listWrap = document.getElementById('ozon-list-wrap');
-            if (listWrap && listWrap.children.length === 0) {
-              renderCurrentDay();
-            }
-          }
-        }
-      });
     }
 
     function renumberOzonRows() {
@@ -1816,12 +2827,673 @@
       });
     }
 
+    /* ЛОГИКА МОДАЛКИ КОРОБОВ */
+    function toggleBoxesModal(show) {
+      closeNumpad();
+      const modal = document.getElementById('boxes-modal');
+      modal.classList.toggle('active', show);
+    }
+
+    function switchBoxesTab(shiftKey) {
+      closeNumpad();
+      currentBoxesTab = shiftKey;
+
+      const btnMorn = document.getElementById('btn-box-tab-morning');
+      const btnEve = document.getElementById('btn-box-tab-evening');
+      const listMorn = document.getElementById('boxes-modal-list-morning');
+      const listEve = document.getElementById('boxes-modal-list-evening');
+      const syncBtn = document.getElementById('btn-sync-boxes');
+
+      if (btnMorn) btnMorn.classList.toggle('active', shiftKey === 'morning');
+      if (btnEve) btnEve.classList.toggle('active', shiftKey === 'evening');
+
+      if (listMorn) listMorn.style.display = (shiftKey === 'morning') ? 'flex' : 'none';
+      if (listEve) listEve.style.display = (shiftKey === 'evening') ? 'flex' : 'none';
+
+      if (syncBtn) {
+        syncBtn.textContent = `Взять из «${shiftKey === 'morning' ? 'Утро' : 'Вечер'}»`;
+      }
+    }
+
+    function renderBoxesModalList(shiftKey, items) {
+      const list = document.getElementById(`boxes-modal-list-${shiftKey}`);
+      if (!list) return;
+      list.innerHTML = '';
+      items.forEach(item => {
+        list.appendChild(createBoxModalRow(item.storeNumber, item.qty || '', shiftKey));
+      });
+    }
+
+    function createBoxModalRow(storeNumber = '', qty = '', shiftKey = 'morning') {
+      const row = document.createElement('div');
+      row.className = 'store-row boxes-modal-row';
+      row.dataset.shift = shiftKey;
+      row.innerHTML = `
+        <div class="store-number-wrap">
+          <input 
+            type="text" 
+            class="store-number-input box-name-input" 
+            value="${escapeHtml(storeNumber)}" 
+            title="${escapeHtml(storeNumber)}"
+            placeholder="Название"
+            oninput="saveCurrentDay()"
+            onkeydown="handleBoxInputKey(event, this, '${shiftKey}')">
+        </div>
+        <div class="qty-wrap">
+          <input 
+            type="text"
+            readonly
+            class="qty-input box-qty-input" 
+            value="${qty === '' ? '' : Math.max(0, parseInt(qty, 10) || 0)}" 
+            placeholder="0" 
+            onclick="openNumpad(this)">
+          <span class="qty-unit">кор.</span>
+        </div>
+        <button type="button" class="del-btn" title="Удалить" onclick="confirmRemoveBoxRow(this)">${ICONS.trash}</button>
+      `;
+      return row;
+    }
+
+    function addActiveBoxModalRow() {
+      const list = document.getElementById(`boxes-modal-list-${currentBoxesTab}`);
+      const count = list.querySelectorAll('.boxes-modal-row').length;
+      const nextName = WB_DEFAULT_STORES[count] || `Точка ${count + 1}`;
+      const newRow = createBoxModalRow(nextName, '', currentBoxesTab);
+      list.appendChild(newRow);
+
+      const nameInput = newRow.querySelector('.box-name-input');
+      nameInput.focus();
+      nameInput.select();
+      saveCurrentDay();
+      return newRow;
+    }
+
+    function handleBoxInputKey(e, input, shiftKey) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const row = input.closest('.boxes-modal-row');
+        const qtyField = row.querySelector('.box-qty-input');
+        if (qtyField) {
+          openNumpad(qtyField);
+        }
+      }
+    }
+
+    function syncBoxesFromActiveShift() {
+      const sourceRows = document.querySelectorAll(`#shift-list-${currentBoxesTab} .store-row`);
+      const shiftTitle = (currentBoxesTab === 'morning') ? 'Утро' : 'Вечер';
+
+      if (!sourceRows || sourceRows.length === 0) return;
+
+      const names = Array.from(sourceRows).map(r => r.querySelector('.store-number-input').value.trim()).filter(Boolean);
+      if (names.length === 0) return;
+
+      const applySync = () => {
+        const list = document.getElementById(`boxes-modal-list-${currentBoxesTab}`);
+        list.innerHTML = '';
+        names.forEach(name => {
+          list.appendChild(createBoxModalRow(name, '', currentBoxesTab));
+        });
+        saveCurrentDay();
+      };
+
+      const existingRows = document.querySelectorAll(`#boxes-modal-list-${currentBoxesTab} .boxes-modal-row`);
+      const hasData = Array.from(existingRows).some(r => r.querySelector('.box-qty-input').value !== '');
+
+      if (hasData) {
+        showConfirmModal({
+          title: `Обновить список (${shiftTitle})?`,
+          desc: `Список точек в коробах будет заменён на склады из смены «${shiftTitle}». Ранее введённые короба для этой смены будут сброшены.`,
+          confirmText: 'Обновить',
+          onConfirm: applySync
+        });
+      } else {
+        applySync();
+      }
+    }
+
+    function copyBoxesToClipboard() {
+      const rows = document.querySelectorAll(`#boxes-modal-list-${currentBoxesTab} .boxes-modal-row`);
+      const lines = [];
+
+      rows.forEach(r => {
+        const name = (r.querySelector('.box-name-input')?.value || '').trim();
+        const rawQty = (r.querySelector('.box-qty-input')?.value || '').trim();
+        const qty = parseInt(rawQty, 10);
+
+        if (name && !isNaN(qty) && qty > 0) {
+          lines.push(`${name} - ${qty}`);
+        }
+      });
+
+      if (lines.length === 0) {
+        rows.forEach(r => {
+          const name = (r.querySelector('.box-name-input')?.value || '').trim();
+          const rawQty = (r.querySelector('.box-qty-input')?.value || '').trim();
+          if (name && rawQty !== '') {
+            lines.push(`${name} - ${rawQty}`);
+          }
+        });
+      }
+
+      if (lines.length === 0) {
+        showCopyNotification('Пусто', false);
+        return;
+      }
+
+      const textToCopy = lines.join('\n');
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showCopyNotification('Скопировано! ✓', true);
+        }).catch(() => {
+          fallbackCopyText(textToCopy);
+        });
+      } else {
+        fallbackCopyText(textToCopy);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.top = '0';
+      textarea.style.left = '0';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showCopyNotification('Скопировано! ✓', true);
+        } else {
+          showCopyNotification('Ошибка', false);
+        }
+      } catch (err) {
+        showCopyNotification('Ошибка', false);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showCopyNotification(msg, isSuccess = true) {
+      const btn = document.getElementById('btn-copy-boxes');
+      const textSpan = document.getElementById('btn-copy-boxes-text');
+      if (!btn || !textSpan) return;
+
+      const originalText = 'Скопировать';
+      textSpan.textContent = msg;
+
+      if (isSuccess) {
+        btn.style.borderColor = 'var(--success)';
+        btn.style.color = 'var(--success)';
+        btn.style.background = 'var(--success-light)';
+      }
+
+      setTimeout(() => {
+        textSpan.textContent = originalText;
+        btn.style.borderColor = '';
+        btn.style.color = '';
+        btn.style.background = '';
+      }, 1500);
+    }
+
+    /* --------------------------------------------- */
+    /* ЛОГИКА БЛОКНОТА (КОМПАКТНЫЕ КАРТОЧКИ + LONGPRESS) */
+    /* --------------------------------------------- */
+    function getNotesList() {
+      try {
+        const raw = localStorage.getItem('app_user_notes_list');
+        if (!raw) {
+          const defaultNotes = [
+            { id: '1', title: 'Кухня', body: 'мука\nМясо кабана\nКартошка\nЛук...', date: '28 Июль', timestamp: Date.now() - 50000000 },
+            { id: '2', title: '[куплет 1]', body: 'Дениска гелик заложил\nИ проиграл все в кости\nХотел богатым быть,\nкрутым,...', date: '26 Март', timestamp: Date.now() - 150000000 },
+            { id: '3', title: '[Verse 1]', body: 'Тёплый пар от чая\nШов на скатерти старой\nФотография в раме\nГладит пальцами мама...', date: '26 Март', timestamp: Date.now() - 150010000 }
+          ];
+          localStorage.setItem('app_user_notes_list', JSON.stringify(defaultNotes));
+          return defaultNotes;
+        }
+        return JSON.parse(raw);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotesList(list) {
+      localStorage.setItem('app_user_notes_list', JSON.stringify(list));
+      updateNotepadBadge();
+    }
+
+    function updateNotepadBadge() {
+      const list = getNotesList();
+      const dot = document.getElementById('note-badge-dot');
+      if (dot) {
+        dot.classList.toggle('active', list.length > 0);
+      }
+    }
+
+    function formatNoteDateFormatted(d = new Date()) {
+      const months = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+      return `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
+    function toggleNotesModal(show) {
+      closeNumpad();
+      const modal = document.getElementById('notes-modal');
+      modal.classList.toggle('active', show);
+
+      if (show) {
+        closeNoteEditor();
+        renderNotesGrid();
+      }
+    }
+
+    function renderNotesGrid() {
+      const container = document.getElementById('notes-cards-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const list = getNotesList();
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="notes-empty-state">
+            <div>У вас пока нет заметок</div>
+            <button type="button" class="btn-create-note" onclick="openNoteEditor(null)">+ Создать первую</button>
+          </div>
+        `;
+        return;
+      }
+
+      list.forEach(note => {
+        const card = document.createElement('div');
+        card.className = 'note-card-item';
+
+        const titleText = note.title.trim() || 'Без названия';
+
+        // Отображается только заголовок и дата
+        card.innerHTML = `
+          <div class="note-card-title">${escapeHtml(titleText)}</div>
+          <div class="note-card-date">${escapeHtml(note.date || 'Недавно')}</div>
+        `;
+
+        // Привязываем обработчик долгого нажатия и клика
+        attachNoteCardEvents(card, note);
+
+        container.appendChild(card);
+      });
+    }
+
+    /* Обработка долгого удержания на заметке */
+    function attachNoteCardEvents(card, note) {
+      let pressTimer = null;
+      let isLongPressed = false;
+
+      const startPress = (e) => {
+        isLongPressed = false;
+        pressTimer = setTimeout(() => {
+          isLongPressed = true;
+          triggerHaptic(40);
+          openNoteLongpressModal(note.id, note.title);
+        }, 520);
+      };
+
+      const cancelPress = () => {
+        if (pressTimer) {
+          clearTimeout(pressTimer);
+          pressTimer = null;
+        }
+      };
+
+      // Сенсорные экраны
+      card.addEventListener('touchstart', startPress, { passive: true });
+      card.addEventListener('touchend', cancelPress);
+      card.addEventListener('touchmove', cancelPress, { passive: true });
+      card.addEventListener('touchcancel', cancelPress);
+
+      // Компьютер / мышь
+      card.addEventListener('mousedown', startPress);
+      card.addEventListener('mouseup', cancelPress);
+      card.addEventListener('mouseleave', cancelPress);
+
+      // Контекстное меню по правому клику
+      card.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        openNoteLongpressModal(note.id, note.title);
+      });
+
+      // Обычный короткий клик для открытия заметки
+      card.addEventListener('click', (e) => {
+        if (isLongPressed) {
+          e.preventDefault();
+          e.stopPropagation();
+          isLongPressed = false;
+          return;
+        }
+        openNoteEditor(note.id);
+      });
+    }
+
+    function openNoteLongpressModal(id, title) {
+      activeLongpressNoteId = id;
+      const displayTitle = (title && title.trim()) ? `«${title.trim()}»` : 'эту заметку';
+      document.getElementById('note-longpress-title').textContent = displayTitle;
+      document.getElementById('note-longpress-modal').classList.add('active');
+    }
+
+    function closeNoteLongpressModal() {
+      document.getElementById('note-longpress-modal').classList.remove('active');
+      activeLongpressNoteId = null;
+    }
+
+    function executeNoteLongpressDelete() {
+      if (!activeLongpressNoteId) return;
+      triggerHaptic(30);
+
+      let list = getNotesList();
+      list = list.filter(n => n.id !== activeLongpressNoteId);
+      saveNotesList(list);
+
+      closeNoteLongpressModal();
+      renderNotesGrid();
+    }
+
+    function openNoteEditor(id = null) {
+      triggerHaptic(20);
+      activeNoteId = id;
+
+      document.getElementById('notes-view-list').style.display = 'none';
+      const editor = document.getElementById('note-editor-view');
+      editor.style.display = 'flex';
+
+      const titleInput = document.getElementById('note-edit-title');
+      const bodyInput = document.getElementById('note-edit-body');
+      const dateBadge = document.getElementById('editor-date-badge');
+
+      if (id) {
+        const list = getNotesList();
+        const note = list.find(n => n.id === id);
+        if (note) {
+          titleInput.value = note.title || '';
+          bodyInput.value = note.body || '';
+          dateBadge.textContent = note.date || formatNoteDateFormatted();
+        }
+      } else {
+        titleInput.value = '';
+        bodyInput.value = '';
+        dateBadge.textContent = formatNoteDateFormatted();
+        setTimeout(() => titleInput.focus(), 80);
+      }
+    }
+
+    function closeNoteEditor() {
+      activeNoteId = null;
+      document.getElementById('notes-view-list').style.display = 'flex';
+      document.getElementById('note-editor-view').style.display = 'none';
+      renderNotesGrid();
+    }
+
+    function saveCurrentEditingNote() {
+      const title = document.getElementById('note-edit-title').value;
+      const body = document.getElementById('note-edit-body').value;
+      let list = getNotesList();
+
+      if (!title.trim() && !body.trim()) {
+        if (activeNoteId) {
+          list = list.filter(n => n.id !== activeNoteId);
+          saveNotesList(list);
+        }
+        return;
+      }
+
+      if (activeNoteId) {
+        const note = list.find(n => n.id === activeNoteId);
+        if (note) {
+          note.title = title;
+          note.body = body;
+          note.timestamp = Date.now();
+        }
+      } else {
+        const newId = String(Date.now());
+        activeNoteId = newId;
+        const newNote = {
+          id: newId,
+          title: title,
+          body: body,
+          date: formatNoteDateFormatted(),
+          timestamp: Date.now()
+        };
+        list.unshift(newNote);
+      }
+
+      saveNotesList(list);
+    }
+
+    function saveAndCloseNoteEditor() {
+      triggerHaptic(25);
+      const title = document.getElementById('note-edit-title').value.trim();
+      const body = document.getElementById('note-edit-body').value.trim();
+
+      if (title || body) {
+        saveCurrentEditingNote();
+      }
+      closeNoteEditor();
+    }
+
+    function deleteCurrentEditorNote() {
+      if (!activeNoteId) {
+        closeNoteEditor();
+        return;
+      }
+
+      showConfirmModal({
+        title: 'Удалить заметку?',
+        desc: 'Эта запись будет безвозвратно удалена из списка.',
+        confirmText: 'Удалить',
+        onConfirm: () => {
+          let list = getNotesList();
+          list = list.filter(n => n.id !== activeNoteId);
+          saveNotesList(list);
+          closeNoteEditor();
+        }
+      });
+    }
+
+    function copyCurrentEditorNote() {
+      const title = document.getElementById('note-edit-title').value.trim();
+      const body = document.getElementById('note-edit-body').value.trim();
+      const textToCopy = (title ? `${title}\n\n` : '') + body;
+
+      if (!textToCopy) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          triggerHaptic(25);
+          const btn = document.getElementById('btn-copy-note-text');
+          btn.style.color = 'var(--success)';
+          setTimeout(() => btn.style.color = '', 1200);
+        });
+      } else {
+        fallbackCopyText(textToCopy);
+      }
+    }
+
+    /* --------------------------------------------- */
+    /* ЛОГИКА ЦИФРОВОГО НУМПАДА */
+    /* --------------------------------------------- */
+    function openNumpad(inputEl) {
+      triggerHaptic(20);
+
+      if (activeNumpadInput) {
+        activeNumpadInput.classList.remove('numpad-active');
+      }
+
+      activeNumpadInput = inputEl;
+      activeNumpadInput.classList.add('numpad-active');
+
+      const row = activeNumpadInput.closest('.store-row');
+      if (row) {
+        row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      updateNumpadHeader();
+
+      document.getElementById('numpad-backdrop').classList.add('active');
+      document.getElementById('numpad-drawer').classList.add('active');
+    }
+
+    function closeNumpad() {
+      if (activeNumpadInput) {
+        activeNumpadInput.classList.remove('numpad-active');
+        activeNumpadInput = null;
+      }
+      const backdrop = document.getElementById('numpad-backdrop');
+      const drawer = document.getElementById('numpad-drawer');
+      if (backdrop) backdrop.classList.remove('active');
+      if (drawer) drawer.classList.remove('active');
+    }
+
+    function updateNumpadHeader() {
+      if (!activeNumpadInput) return;
+
+      const row = activeNumpadInput.closest('.store-row');
+      let storeName = 'Точка';
+      let subTitle = 'Количество';
+      let unit = 'шт.';
+
+      if (row) {
+        const nameInput = row.querySelector('.store-number-input, .box-name-input');
+        if (nameInput && nameInput.value.trim()) {
+          storeName = nameInput.value.trim();
+        }
+
+        const isBox = row.classList.contains('boxes-modal-row');
+        if (isBox) {
+          unit = 'кор.';
+          const shiftKey = row.dataset.shift || currentBoxesTab;
+          subTitle = `Короба (${shiftKey === 'morning' ? 'Утро' : 'Вечер'})`;
+        } else {
+          unit = 'шт.';
+          const shiftKey = row.dataset.shift;
+          if (shiftKey === 'morning') subTitle = 'Утренняя смена';
+          else if (shiftKey === 'evening') subTitle = 'Вечерняя смена';
+          else subTitle = 'Отправление Ozon';
+        }
+      }
+
+      const val = activeNumpadInput.value || '0';
+
+      document.getElementById('numpad-title').textContent = storeName;
+      document.getElementById('numpad-subtitle').textContent = subTitle;
+      document.getElementById('numpad-display').textContent = val;
+      document.getElementById('numpad-unit').textContent = unit;
+    }
+
+    function numpadDigit(digit) {
+      if (!activeNumpadInput) return;
+      triggerHaptic(18);
+
+      let currentVal = activeNumpadInput.value.trim();
+
+      if (currentVal === '' || currentVal === '0') {
+        currentVal = digit;
+      } else {
+        if (currentVal.length < 5) {
+          currentVal += digit;
+        }
+      }
+
+      activeNumpadInput.value = currentVal;
+      updateNumpadHeader();
+      saveCurrentDay();
+    }
+
+    function numpadAdd(delta) {
+      if (!activeNumpadInput) return;
+      triggerHaptic(25);
+
+      let currentVal = parseInt(activeNumpadInput.value.trim(), 10);
+      if (isNaN(currentVal) || currentVal < 0) currentVal = 0;
+
+      currentVal += delta;
+      if (currentVal > 99999) currentVal = 99999;
+
+      activeNumpadInput.value = String(currentVal);
+      updateNumpadHeader();
+      saveCurrentDay();
+    }
+
+    function numpadBackspace() {
+      if (!activeNumpadInput) return;
+      triggerHaptic(18);
+
+      let currentVal = activeNumpadInput.value.trim();
+      if (currentVal.length > 0) {
+        currentVal = currentVal.slice(0, -1);
+      }
+
+      activeNumpadInput.value = currentVal;
+      updateNumpadHeader();
+      saveCurrentDay();
+    }
+
+    function numpadClear() {
+      if (!activeNumpadInput) return;
+      triggerHaptic(30);
+
+      activeNumpadInput.value = '';
+      updateNumpadHeader();
+      saveCurrentDay();
+    }
+
+    function numpadNavigate(direction) {
+      if (!activeNumpadInput) return;
+      triggerHaptic(20);
+
+      const isInsideBoxModal = !!activeNumpadInput.closest('.modal-sheet');
+      let inputsList = [];
+
+      if (isInsideBoxModal) {
+        const activeContainer = document.getElementById(`boxes-modal-list-${currentBoxesTab}`);
+        if (activeContainer) {
+          inputsList = Array.from(activeContainer.querySelectorAll('.qty-input'));
+        }
+      } else {
+        inputsList = Array.from(document.querySelectorAll('#main-content .qty-input'));
+      }
+
+      const currentIndex = inputsList.indexOf(activeNumpadInput);
+
+      if (currentIndex !== -1) {
+        const nextIndex = currentIndex + direction;
+
+        if (nextIndex >= 0 && nextIndex < inputsList.length) {
+          openNumpad(inputsList[nextIndex]);
+        } else if (direction > 0 && nextIndex >= inputsList.length) {
+          if (isInsideBoxModal) {
+            const newRow = addActiveBoxModalRow();
+            const nextQty = newRow.querySelector('.qty-input');
+            if (nextQty) openNumpad(nextQty);
+          } else {
+            const newRow = handleAddStoreClick();
+            if (newRow) {
+              const nextQty = newRow.querySelector('.qty-input');
+              if (nextQty) openNumpad(nextQty);
+            }
+          }
+        }
+      }
+    }
+
     function saveCurrentDay() {
       const db = getAllData();
 
       if (currentMarket === 'wb') {
         const morningRows = document.querySelectorAll('#shift-list-morning .store-row');
         const eveningRows = document.querySelectorAll('#shift-list-evening .store-row');
+        const boxRowsMorn = document.querySelectorAll('#boxes-modal-list-morning .boxes-modal-row');
+        const boxRowsEve = document.querySelectorAll('#boxes-modal-list-evening .boxes-modal-row');
 
         const mapRows = (rows) => Array.from(rows).map(r => ({
           storeNumber: r.querySelector('.store-number-input').value.trim(),
@@ -1829,9 +3501,18 @@
           scanned: r.dataset.status || ''
         }));
 
+        const mapBoxRows = (rows) => Array.from(rows).map(r => ({
+          storeNumber: r.querySelector('.box-name-input').value.trim(),
+          qty: r.querySelector('.box-qty-input').value
+        }));
+
         db[currentDate] = {
           morning: mapRows(morningRows),
-          evening: mapRows(eveningRows)
+          evening: mapRows(eveningRows),
+          boxes: {
+            morning: mapBoxRows(boxRowsMorn),
+            evening: mapBoxRows(boxRowsEve)
+          }
         };
       } else {
         const rows = document.querySelectorAll('#ozon-list-wrap .store-row');
@@ -1852,11 +3533,13 @@
     }
 
     function recalculateAll() {
-      let totalQty = 0;
       let totalStores = 0;
       let totalScanned = 0;
 
       if (currentMarket === 'wb') {
+        let totalPieces = 0;
+        let totalBoxes = 0;
+
         const calcShift = (shiftKey) => {
           let shiftQty = 0;
           let shiftScanned = 0;
@@ -1871,14 +3554,50 @@
           const badge = document.querySelector(`.shift-badge-${shiftKey}`);
           if (badge) badge.textContent = `${shiftQty} шт. (${shiftScanned}/${rows.length})`;
 
-          totalQty += shiftQty;
+          totalPieces += shiftQty;
           totalStores += rows.length;
           totalScanned += shiftScanned;
         };
 
         calcShift('morning');
         calcShift('evening');
+
+        let mornBoxes = 0;
+        document.querySelectorAll('#boxes-modal-list-morning .box-qty-input').forEach(input => {
+          const val = parseInt(input.value, 10);
+          if (!isNaN(val) && val > 0) mornBoxes += val;
+        });
+
+        let eveBoxes = 0;
+        document.querySelectorAll('#boxes-modal-list-evening .box-qty-input').forEach(input => {
+          const val = parseInt(input.value, 10);
+          if (!isNaN(val) && val > 0) eveBoxes += val;
+        });
+
+        totalBoxes = mornBoxes + eveBoxes;
+
+        const tabBadgeMorn = document.getElementById('box-tab-badge-morning');
+        const tabBadgeEve = document.getElementById('box-tab-badge-evening');
+        if (tabBadgeMorn) tabBadgeMorn.textContent = `${mornBoxes} кор.`;
+        if (tabBadgeEve) tabBadgeEve.textContent = `${eveBoxes} кор.`;
+
+        const boxBtn = document.getElementById('wb-boxes-card-trigger');
+        const boxBadge = document.getElementById('box-top-badge');
+        const boxDesc = document.getElementById('box-sub-desc');
+
+        if (boxBadge && boxDesc && boxBtn) {
+          boxBadge.textContent = `${totalBoxes} кор.`;
+          boxDesc.textContent = `Утро: ${mornBoxes} · Вечер: ${eveBoxes}`;
+          boxBtn.classList.toggle('has-boxes', totalBoxes > 0);
+        }
+
+        if (totalBoxes > 0) {
+          document.getElementById('day-total-qty').textContent = `${totalPieces} шт. / ${totalBoxes} кор.`;
+        } else {
+          document.getElementById('day-total-qty').textContent = `${totalPieces} шт.`;
+        }
       } else {
+        let totalQty = 0;
         const rows = document.querySelectorAll('#ozon-list-wrap .store-row');
         rows.forEach(r => {
           const raw = r.querySelector('.qty-input').value;
@@ -1887,9 +3606,9 @@
           if (r.dataset.status === 'scanned') totalScanned++;
         });
         totalStores = rows.length;
+        document.getElementById('day-total-qty').textContent = `${totalQty} шт.`;
       }
 
-      document.getElementById('day-total-qty').textContent = `${totalQty} шт.`;
       document.getElementById('summary-stores-count').textContent = `${totalStores} точ.`;
 
       const scannedLabel = document.getElementById('summary-scanned-count');
@@ -1901,6 +3620,7 @@
     }
 
     function toggleResetModal(show) {
+      closeNumpad();
       const modal = document.getElementById('reset-modal');
       modal.classList.toggle('active', show);
     }
@@ -1911,6 +3631,8 @@
       if (currentMarket === 'wb') {
         const morningRows = document.querySelectorAll('#shift-list-morning .store-row');
         const eveningRows = document.querySelectorAll('#shift-list-evening .store-row');
+        const boxRowsMorn = document.querySelectorAll('#boxes-modal-list-morning .boxes-modal-row');
+        const boxRowsEve = document.querySelectorAll('#boxes-modal-list-evening .boxes-modal-row');
 
         const mapReset = (rows, defaultList) => {
           if (rows.length === 0) return defaultList.map(name => ({ storeNumber: name, qty: '', scanned: '' }));
@@ -1921,9 +3643,21 @@
           }));
         };
 
+        const mapBoxesReset = (rows, defaultList) => {
+          if (rows.length === 0) return defaultList.map(name => ({ storeNumber: name, qty: '' }));
+          return Array.from(rows).map(r => ({
+            storeNumber: r.querySelector('.box-name-input').value.trim(),
+            qty: ''
+          }));
+        };
+
         db[currentDate] = {
           morning: mapReset(morningRows, WB_DEFAULT_STORES),
-          evening: mapReset(eveningRows, WB_DEFAULT_STORES)
+          evening: mapReset(eveningRows, WB_DEFAULT_STORES),
+          boxes: {
+            morning: mapBoxesReset(boxRowsMorn, WB_DEFAULT_STORES),
+            evening: mapBoxesReset(boxRowsEve, WB_DEFAULT_STORES)
+          }
         };
       } else {
         const ozonRows = document.querySelectorAll('#ozon-list-wrap .store-row');
@@ -1955,11 +3689,13 @@
           localStorage.removeItem(getStorageKey());
           renderRibbon(false);
           renderCurrentDay();
+          updateNotepadBadge();
         }
       });
     }
 
     function toggleHistory(show) {
+      closeNumpad();
       const modal = document.getElementById('history-modal');
       modal.classList.toggle('active', show);
 
@@ -1976,16 +3712,27 @@
 
         dates.forEach(d => {
           let sumQty = 0;
+          let sumBoxes = 0;
           let count = 0;
           let scanned = 0;
 
           if (currentMarket === 'wb') {
             const morningItems = db[d].morning || db[d].day || [];
             const eveItems = db[d].evening || [];
-            const allItems = [...morningItems, ...eveItems];
-            sumQty = allItems.reduce((acc, cur) => acc + (parseInt(cur.qty, 10) || 0), 0);
-            count = allItems.length;
-            scanned = allItems.filter(i => i.scanned === 'scanned').length;
+            const shiftItems = [...morningItems, ...eveItems];
+
+            const boxData = db[d].boxes;
+            if (Array.isArray(boxData)) {
+              sumBoxes = boxData.reduce((acc, cur) => acc + (parseInt(cur.qty, 10) || 0), 0);
+            } else if (boxData && typeof boxData === 'object') {
+              const mornB = boxData.morning || [];
+              const eveB = boxData.evening || [];
+              sumBoxes = [...mornB, ...eveB].reduce((acc, cur) => acc + (parseInt(cur.qty, 10) || 0), 0);
+            }
+
+            sumQty = shiftItems.reduce((acc, cur) => acc + (parseInt(cur.qty, 10) || 0), 0);
+            count = shiftItems.length;
+            scanned = shiftItems.filter(i => i.scanned === 'scanned').length;
           } else {
             const items = db[d] || [];
             sumQty = items.reduce((acc, cur) => acc + (parseInt(cur.qty, 10) || 0), 0);
@@ -1994,6 +3741,9 @@
           }
 
           const dateTitle = new Date(d + 'T00:00:00').toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', weekday: 'short' });
+          const qtyText = (currentMarket === 'wb' && sumBoxes > 0) 
+            ? `${sumQty} шт. / ${sumBoxes} кор.` 
+            : `${sumQty} шт.`;
 
           const row = document.createElement('div');
           row.className = 'history-row';
@@ -2002,7 +3752,7 @@
               <div style="font-weight:800;font-size:13.5px;">${dateTitle}</div>
               <div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Точек: ${count} (отскан. ${scanned})</div>
             </div>
-            <div style="font-weight:800;font-size:14px;color:var(--primary);">${sumQty} шт. ›</div>
+            <div style="font-weight:800;font-size:13px;color:var(--primary);">${qtyText} ›</div>
           `;
           row.onclick = () => {
             currentDate = d;
