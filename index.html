@@ -306,7 +306,7 @@
     }
     .month-nav-btn:active { background: var(--primary-light); }
 
-    /* Карточки дней */
+    /* Карточки дней - бесконечная сквозная лента */
     .days-ribbon-container { max-width: 680px; margin: 0 auto; }
     .days-ribbon {
       display: flex;
@@ -315,6 +315,7 @@
       padding: 5px 12px 8px;
       scrollbar-width: none;
       scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
     }
     .days-ribbon::-webkit-scrollbar { display: none; }
 
@@ -331,7 +332,7 @@
       cursor: pointer;
       scroll-snap-align: center;
       position: relative;
-      transition: border-color 0.15s, background-color 0.15s;
+      transition: border-color 0.15s, background-color 0.15s, transform 0.12s;
     }
     .day-card:active { transform: scale(0.95); }
     .day-card .day-weekday {
@@ -357,6 +358,15 @@
     }
     .day-card .day-dot.dot-complete { background: var(--success); }
     .day-card .day-dot.dot-pending { background: #f59e0b; }
+
+    /* Выделение 1-го числа месяца */
+    .day-card.is-month-first {
+      border-left: 2.5px solid var(--primary);
+    }
+    .day-card.is-month-first:not(.active) .day-weekday {
+      color: var(--primary);
+      font-weight: 800;
+    }
 
     .day-card.active {
       background: var(--primary);
@@ -1845,7 +1855,7 @@
           <span id="summary-scanned-count" style="color: var(--success); font-weight:700; margin-left: 2px;"></span>
         </div>
         <div class="bottom-actions-row">
-          <!-- Крупная кнопка Блокнота в нижней панели с иконкой и индикатором -->
+          <!-- Кнопка Блокнота -->
           <button class="btn-sub-action" id="btn-notepad-bottom" onclick="toggleNotesModal(true)" title="Заметки" aria-label="Заметки">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -1856,7 +1866,7 @@
             <span class="note-badge-dot" id="note-badge-dot"></span>
           </button>
 
-          <!-- Крупная кнопка Истории -->
+          <!-- Кнопка Истории -->
           <button class="btn-sub-action" onclick="toggleHistory(true)" title="История" aria-label="История">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -1867,7 +1877,7 @@
             </svg>
           </button>
 
-          <!-- Крупная кнопка Сброса -->
+          <!-- Кнопка Сброса -->
           <button class="btn-sub-action reset-action" onclick="toggleResetModal(true)" title="Сброс" aria-label="Сброс">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -2144,6 +2154,12 @@
     let activeNoteId = null;
     let activeLongpressNoteId = null;
 
+    // Переменные диапазона ленты дат
+    let ribbonStartDate = null;
+    let ribbonEndDate = null;
+    let isRibbonUpdating = false;
+    let ribbonScrollTimer = null;
+
     const ICONS = {
       sun: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
       moon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`,
@@ -2174,10 +2190,15 @@
     document.addEventListener('DOMContentLoaded', () => {
       applyThemeMode();
       applyMarketTheme();
-      renderRibbon();
+      initRibbon(currentDate);
       renderCurrentDay();
       initSwipeNavigation();
       updateNotepadBadge();
+
+      const ribbon = document.getElementById('days-ribbon');
+      if (ribbon) {
+        ribbon.addEventListener('scroll', onRibbonScroll, { passive: true });
+      }
     });
 
     function triggerHaptic(duration = 22) {
@@ -2249,10 +2270,7 @@
       closeNumpad();
       const [y, m, d] = currentDate.split('-').map(Number);
       const newDate = new Date(y, m - 1, d + delta);
-      currentDate = formatDateToYMD(newDate);
-      renderRibbon(true);
-      renderCurrentDay();
-      updateNotepadBadge();
+      selectDate(formatDateToYMD(newDate), true);
     }
 
     function showConfirmModal({ title, desc, confirmText = 'Удалить', onConfirm }) {
@@ -2366,7 +2384,7 @@
       localStorage.setItem('selected_market', marketKey);
 
       applyMarketTheme();
-      renderRibbon(false);
+      updateRibbonDots();
       renderCurrentDay();
       updateNotepadBadge();
     }
@@ -2425,94 +2443,238 @@
       return allProcessed ? 'complete' : 'pending';
     }
 
-    function renderRibbon(shouldCenter = true) {
-      const [y, m, d] = currentDate.split('-').map(Number);
-      const activeDateObj = new Date(y, m - 1, d);
-      const todayStr = getTodayDateStr();
-      const db = getAllData();
-
-      const monthName = activeDateObj.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
-      document.getElementById('month-title').textContent = capitalize(monthName);
-      document.getElementById('date-picker-input').value = currentDate;
-
+    /* ------------------------------------------------------------- */
+    /* СКВОЗНАЯ НЕПРЕРЫВНАЯ ЛЕНТА ДАТ С АВТООБНОВЛЕНИЕМ МЕСЯЦА */
+    /* ------------------------------------------------------------- */
+    function initRibbon(targetDateStr) {
       const ribbon = document.getElementById('days-ribbon');
+      if (!ribbon) return;
       ribbon.innerHTML = '';
 
-      const daysInMonth = new Date(y, m, 0).getDate();
+      const [y, m, d] = targetDateStr.split('-').map(Number);
+      const center = new Date(y, m - 1, d);
+
+      // Инициализируем буфер: 50 дней до и 60 дней после целевой даты
+      ribbonStartDate = new Date(center);
+      ribbonStartDate.setDate(ribbonStartDate.getDate() - 50);
+
+      ribbonEndDate = new Date(center);
+      ribbonEndDate.setDate(ribbonEndDate.getDate() + 60);
+
+      const fragment = document.createDocumentFragment();
+      const db = getAllData();
+      const todayStr = getTodayDateStr();
+
+      let cur = new Date(ribbonStartDate);
       let activeCard = null;
 
-      for (let dayNum = 1; dayNum <= daysInMonth; dayNum++) {
-        const loopDate = new Date(y, m - 1, dayNum);
-        const loopDateStr = formatDateToYMD(loopDate);
-        const weekday = loopDate.toLocaleDateString('ru-RU', { weekday: 'short' });
-
-        const card = document.createElement('div');
-        card.className = 'day-card';
-
-        const isSelected = (loopDateStr === currentDate);
-        const isToday = (loopDateStr === todayStr);
-        const dotStatus = getDayDotStatus(loopDateStr, db);
-
-        if (isSelected) {
-          card.classList.add('active');
+      while (cur <= ribbonEndDate) {
+        const card = createDayCard(cur, db, todayStr);
+        if (card.dataset.date === targetDateStr) {
           activeCard = card;
         }
-        if (isToday) card.classList.add('is-today');
-
-        let dotClass = 'day-dot';
-        if (dotStatus === 'complete') dotClass += ' dot-complete';
-        else if (dotStatus === 'pending') dotClass += ' dot-pending';
-
-        card.innerHTML = `
-          <span class="day-weekday">${weekday}</span>
-          <span class="day-number">${dayNum}</span>
-          <span class="${dotClass}"></span>
-        `;
-
-        card.onclick = () => {
-          if (currentDate === loopDateStr) return;
-          closeNumpad();
-          currentDate = loopDateStr;
-          renderRibbon(true);
-          renderCurrentDay();
-          updateNotepadBadge();
-        };
-
-        ribbon.appendChild(card);
+        fragment.appendChild(card);
+        cur.setDate(cur.getDate() + 1);
       }
 
-      if (shouldCenter && activeCard) {
+      ribbon.appendChild(fragment);
+      updateMonthTitleForDate(center);
+
+      if (activeCard) {
         setTimeout(() => {
-          activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }, 50);
+          activeCard.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
+        }, 40);
       }
+    }
+
+    function createDayCard(dateObj, db, todayStr) {
+      const dateStr = formatDateToYMD(dateObj);
+      const weekday = dateObj.toLocaleDateString('ru-RU', { weekday: 'short' });
+      const dayNum = dateObj.getDate();
+      const isSelected = (dateStr === currentDate);
+      const isToday = (dateStr === todayStr);
+      const dotStatus = getDayDotStatus(dateStr, db);
+      const isFirstOfMonth = (dayNum === 1);
+
+      const card = document.createElement('div');
+      card.className = 'day-card';
+      card.dataset.date = dateStr;
+
+      if (isSelected) card.classList.add('active');
+      if (isToday) card.classList.add('is-today');
+      if (isFirstOfMonth) card.classList.add('is-month-first');
+
+      let dotClass = 'day-dot';
+      if (dotStatus === 'complete') dotClass += ' dot-complete';
+      else if (dotStatus === 'pending') dotClass += ' dot-pending';
+
+      const monthShort = dateObj.toLocaleDateString('ru-RU', { month: 'short' }).replace('.', '').slice(0, 3).toUpperCase();
+
+      card.innerHTML = `
+        <span class="day-weekday">${isFirstOfMonth ? monthShort : weekday}</span>
+        <span class="day-number">${dayNum}</span>
+        <span class="${dotClass}"></span>
+      `;
+
+      card.onclick = () => {
+        if (currentDate === dateStr) return;
+        closeNumpad();
+        selectDate(dateStr, true);
+      };
+
+      return card;
+    }
+
+    function prependRibbonDays(count = 35) {
+      if (isRibbonUpdating) return;
+      isRibbonUpdating = true;
+
+      const ribbon = document.getElementById('days-ribbon');
+      const oldScrollWidth = ribbon.scrollWidth;
+      const oldScrollLeft = ribbon.scrollLeft;
+
+      const fragment = document.createDocumentFragment();
+      const db = getAllData();
+      const todayStr = getTodayDateStr();
+
+      for (let i = count; i >= 1; i--) {
+        const d = new Date(ribbonStartDate);
+        d.setDate(d.getDate() - i);
+        const card = createDayCard(d, db, todayStr);
+        fragment.appendChild(card);
+      }
+      ribbonStartDate.setDate(ribbonStartDate.getDate() - count);
+
+      ribbon.style.scrollSnapType = 'none';
+      ribbon.insertBefore(fragment, ribbon.firstChild);
+      ribbon.scrollLeft = oldScrollLeft + (ribbon.scrollWidth - oldScrollWidth);
+
+      requestAnimationFrame(() => {
+        ribbon.style.scrollSnapType = '';
+        isRibbonUpdating = false;
+      });
+    }
+
+    function appendRibbonDays(count = 35) {
+      if (isRibbonUpdating) return;
+      isRibbonUpdating = true;
+
+      const ribbon = document.getElementById('days-ribbon');
+      const fragment = document.createDocumentFragment();
+      const db = getAllData();
+      const todayStr = getTodayDateStr();
+
+      for (let i = 1; i <= count; i++) {
+        const d = new Date(ribbonEndDate);
+        d.setDate(d.getDate() + i);
+        const card = createDayCard(d, db, todayStr);
+        fragment.appendChild(card);
+      }
+      ribbonEndDate.setDate(ribbonEndDate.getDate() + count);
+
+      ribbon.appendChild(fragment);
+      isRibbonUpdating = false;
+    }
+
+    function onRibbonScroll() {
+      const ribbon = document.getElementById('days-ribbon');
+      if (!ribbon || isRibbonUpdating) return;
+
+      // Автоподгрузка при приближении к началу или концу
+      if (ribbon.scrollLeft < 160) {
+        prependRibbonDays(30);
+      } else if (ribbon.scrollWidth - ribbon.scrollLeft - ribbon.clientWidth < 160) {
+        appendRibbonDays(30);
+      }
+
+      // Плавное обновление месяца в шапке по карточке в центре экрана
+      if (ribbonScrollTimer) cancelAnimationFrame(ribbonScrollTimer);
+      ribbonScrollTimer = requestAnimationFrame(() => {
+        const rect = ribbon.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const elem = document.elementFromPoint(centerX, rect.top + rect.height / 2);
+        const card = elem ? elem.closest('.day-card') : null;
+
+        if (card && card.dataset.date) {
+          const [cy, cm, cd] = card.dataset.date.split('-').map(Number);
+          updateMonthTitleForDate(new Date(cy, cm - 1, cd));
+        }
+      });
+    }
+
+    function updateMonthTitleForDate(dateObj) {
+      const monthName = dateObj.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+      const el = document.getElementById('month-title');
+      if (el) el.textContent = capitalize(monthName);
+
+      const picker = document.getElementById('date-picker-input');
+      if (picker) picker.value = formatDateToYMD(dateObj);
+    }
+
+    function selectDate(dateStr, shouldScroll = true) {
+      currentDate = dateStr;
+      const [y, m, d] = dateStr.split('-').map(Number);
+      const targetDateObj = new Date(y, m - 1, d);
+
+      // Если дата за пределами загруженного буфера — перезагружаем ленту вокруг неё
+      if (!ribbonStartDate || targetDateObj < ribbonStartDate || targetDateObj > ribbonEndDate) {
+        initRibbon(dateStr);
+      } else {
+        const ribbon = document.getElementById('days-ribbon');
+        let targetCard = null;
+        ribbon.querySelectorAll('.day-card').forEach(card => {
+          const isTarget = (card.dataset.date === dateStr);
+          card.classList.toggle('active', isTarget);
+          if (isTarget) targetCard = card;
+        });
+
+        if (targetCard && shouldScroll) {
+          targetCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+        updateMonthTitleForDate(targetDateObj);
+      }
+
+      renderCurrentDay();
+      updateNotepadBadge();
+    }
+
+    function updateRibbonDots() {
+      const db = getAllData();
+      const ribbon = document.getElementById('days-ribbon');
+      if (!ribbon) return;
+
+      ribbon.querySelectorAll('.day-card').forEach(card => {
+        const dateStr = card.dataset.date;
+        if (!dateStr) return;
+        const dotStatus = getDayDotStatus(dateStr, db);
+        const dot = card.querySelector('.day-dot');
+        if (dot) {
+          dot.className = 'day-dot';
+          if (dotStatus === 'complete') dot.classList.add('dot-complete');
+          else if (dotStatus === 'pending') dot.classList.add('dot-pending');
+        }
+      });
     }
 
     function shiftMonth(delta) {
       closeNumpad();
       const [y, m, d] = currentDate.split('-').map(Number);
-      const newDate = new Date(y, m - 1 + delta, 1);
-      currentDate = formatDateToYMD(newDate);
-      renderRibbon(true);
-      renderCurrentDay();
-      updateNotepadBadge();
+      const targetDateObj = new Date(y, m - 1 + delta, d);
+      if (targetDateObj.getDate() !== d) {
+        targetDateObj.setDate(0);
+      }
+      selectDate(formatDateToYMD(targetDateObj), true);
     }
 
     function onDatePicked(val) {
       if (!val) return;
       closeNumpad();
-      currentDate = val;
-      renderRibbon(true);
-      renderCurrentDay();
-      updateNotepadBadge();
+      selectDate(val, true);
     }
 
     function goToToday() {
       closeNumpad();
-      currentDate = getTodayDateStr();
-      renderRibbon(true);
-      renderCurrentDay();
-      updateNotepadBadge();
+      selectDate(getTodayDateStr(), true);
     }
 
     function capitalize(str) {
@@ -2969,7 +3131,7 @@
       }
     }
 
-    /* ФУНКЦИЯ КОПИРОВАНИЯ КОРОБОВ В БУФЕР ОБМЕНА С ШАПКОЙ (ДД.ММ И ВЫБРАННАЯ СМЕНА) */
+    /* КОПИРОВАНИЕ КОРОБОВ В БУФЕР ОБМЕНА С ШАПКОЙ (ДД.ММ И СМЕНА) */
     function copyBoxesToClipboard() {
       const rows = document.querySelectorAll(`#boxes-modal-list-${currentBoxesTab} .boxes-modal-row`);
       const lines = [];
@@ -2999,7 +3161,6 @@
         return;
       }
 
-      // Формирование шапки: дата (ДД.ММ) и название выбранной вкладки (Утро / Вечер)
       const [y, m, d] = currentDate.split('-');
       const shiftName = (currentBoxesTab === 'morning') ? 'Утро' : 'Вечер';
       const header = `${d}.${m} ${shiftName}`;
@@ -3065,7 +3226,7 @@
     }
 
     /* ----------------------------------------------------------- */
-    /* ЛОГИКА БЛОКНОТА (РАЗДЕЛЬНО ДЛЯ КАЖДОГО ДНЯ КАЛЕНДАРЯ) */
+    /* ЛОГИКА БЛОКНОТА */
     /* ----------------------------------------------------------- */
     function getAllDailyNotesDb() {
       try {
@@ -3075,8 +3236,7 @@
           const initial = {
             [today]: [
               { id: '1', title: 'Кухня', body: 'мука\nМясо кабана\nКартошка\nЛук...', date: formatNoteDateFormatted(today), timestamp: Date.now() - 50000 },
-              { id: '2', title: '[куплет 1]', body: 'Дениска гелик заложил\nИ проиграл все в кости\nХотел богатым быть,\nкрутым,...', date: formatNoteDateFormatted(today), timestamp: Date.now() - 150000 },
-              { id: '3', title: '[Verse 1]', body: 'Тёплый пар от чая\nШов на скатерти старой\nФотография в раме\nГладит пальцами мама...', date: formatNoteDateFormatted(today), timestamp: Date.now() - 150010000 }
+              { id: '2', title: '[куплет 1]', body: 'Дениска гелик заложил\nИ проиграл все в кости\nХотел богатым быть,\nкрутым,...', date: formatNoteDateFormatted(today), timestamp: Date.now() - 150000 }
             ]
           };
           localStorage.setItem('app_daily_notes_by_date_db', JSON.stringify(initial));
@@ -3577,7 +3737,7 @@
 
       saveAllData(db);
       recalculateAll();
-      renderRibbon(false);
+      updateRibbonDots();
     }
 
     function recalculateAll() {
@@ -3722,6 +3882,7 @@
 
       saveAllData(db);
       renderCurrentDay();
+      updateRibbonDots();
       toggleResetModal(false);
     }
 
@@ -3736,7 +3897,7 @@
         onConfirm: () => {
           localStorage.removeItem(getStorageKey());
           localStorage.removeItem('app_daily_notes_by_date_db');
-          renderRibbon(false);
+          updateRibbonDots();
           renderCurrentDay();
           updateNotepadBadge();
         }
@@ -3804,10 +3965,7 @@
             <div style="font-weight:800;font-size:13px;color:var(--primary);">${qtyText} ›</div>
           `;
           row.onclick = () => {
-            currentDate = d;
-            renderRibbon(true);
-            renderCurrentDay();
-            updateNotepadBadge();
+            selectDate(d, true);
             toggleHistory(false);
           };
           list.appendChild(row);
